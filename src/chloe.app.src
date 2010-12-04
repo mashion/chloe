@@ -1,0 +1,13 @@
+{application, chloe,
+ [
+  {description, "A websocket server"},
+  {vsn, "0.0.1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  yaws
+                 ]},
+  {mod, { chloe_app, []}},
+  {env, []}
+ ]}.
