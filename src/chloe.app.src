@@ -2,11 +2,10 @@
  [
   {description, "A websocket server"},
   {vsn, "0.0.1"},
-  {registered, []},
+  {registered, [chloe_sup]},
   {applications, [
                   kernel,
-                  stdlib,
-                  yaws
+                  stdlib
                  ]},
   {mod, { chloe_app, []}},
   {env, []}

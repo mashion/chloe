@@ -24,5 +24,8 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    {ok, { {one_for_one, 5, 10}, []} }.
+    Yaws = ?CHILD(chloe_yaws, worker),
+    Children = [Yaws],
+    RestartStrategy = {one_for_one, 5, 10},
+    {ok, {RestartStrategy, Children}}.
 
