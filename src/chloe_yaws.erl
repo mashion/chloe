@@ -20,7 +20,8 @@ run() ->
                  {servername, "foobar"},
                  {listen, {0,0,0,0}},
                  {docroot, Docroot},
-                 {appmods, [{"/", chloe_yaws_root}]}],
+                 {appmods, [{"/updates", chloe_yaws_updates},
+                            {"/", chloe_yaws_root}]}],
     {ok, SCList, GC, ChildSpecs} =
         yaws_api:embedded_start_conf(Docroot, SconfList, GconfList, Id),
     [supervisor:start_child(?SUPERVISOR, Ch) || Ch <- ChildSpecs],
