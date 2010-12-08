@@ -51,10 +51,14 @@ handle_info({ok, WebSocket}, State) ->
 handle_info({tcp, _WebSocket, DataFrame}, State) ->
     Data = yaws_api:websocket_unframe_data(DataFrame),
     error_logger:info_msg("Got data from WebSocket: ~p~n", [Data]),
-    send_to_all_subscribers(Data),
+    send_to_ruby(Data),
     {noreply, State};
 handle_info({tcp_closed, _WebSocket}, State) ->
-    {stop, ok, State}.
+    {stop, ok, State};
+%% httpc is going to tell us how our request went,
+%% but we don't care
+handle_info({http, _Response}, State) ->
+    {noreply, State}.
 
 terminate(_Reason, _State) ->
     ok.
@@ -73,3 +77,10 @@ send_to_all_subscribers(Data) ->
             chloe_websocket:send(Pid, Data)
         end,
         Subscribers).
+
+send_to_ruby(Data) ->
+    httpc:request(post, {"http://localhost:4567/updates",
+                         [],
+                         "text/plain",
+                         Data},
+                  [], [{sync, false}]).
