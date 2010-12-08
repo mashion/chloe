@@ -15,7 +15,9 @@ Installation
 - in another terminal window, `ruby support/echo_server.rb`
 - Point your browser at http://localhost:8888 and open up the javascript console
 - In the console:
-        ws = new WebSocket("ws://localhost:8888/updates");
-        ws.onmessage = function (m) { console.log(m.data) };
-        ws.send("Patch me through");
+
+    ws = new WebSocket("ws://localhost:8888/updates");
+    ws.onmessage = function (m) { console.log(m.data) };
+    ws.send("Patch me through");
+
 - Relish in the awesome.
