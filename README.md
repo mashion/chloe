@@ -20,4 +20,4 @@ Installation
     ws.onmessage = function (m) { console.log(m.data) };
     ws.send("Patch me through");
 
-- Relish in the awesome.
+- Relish the awesome.
