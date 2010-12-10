@@ -40,17 +40,20 @@ handle_call(_, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({send, Data}, State) ->
-    yaws_api:websocket_send(State#state.websocket, Data),
+    error_logger:info_msg("Sending back: ~p", pack_message(Data)),
+    yaws_api:websocket_send(State#state.websocket, pack_message(Data)),
     {noreply, State}.
 
 %% This is where our websocket comms will come in
 handle_info({ok, WebSocket}, State) ->
     error_logger:info_msg("Websocket started on ~p~n", [self()]),
     chloe_channel_store:subscribe("/all", self()),
+    perform_session_handshake(WebSocket),
     {noreply, State#state{websocket = WebSocket}};
 handle_info({tcp, _WebSocket, DataFrame}, State) ->
     Data = yaws_api:websocket_unframe_data(DataFrame),
-    error_logger:info_msg("Got data from WebSocket: ~p~n", [Data]),
+    Message = unpack_message(Data),
+    error_logger:info_msg("Got data from WebSocket: ~p~n", [Message]),
     send_to_ruby(Data),
     {noreply, State};
 handle_info({tcp_closed, _WebSocket}, State) ->
@@ -84,3 +87,17 @@ send_to_ruby(Data) ->
                          "text/plain",
                          Data},
                   [], [{sync, false}]).
+
+perform_session_handshake(WebSocket) ->
+    yaws_api:websocket_send(WebSocket, "3:3:253,").
+
+pack_message(Data) ->
+    % Extra ':' on the front is to separate out the annotations section
+    % of the protocol
+    String = string:concat(":", binary_to_list(Data)),
+    %% There must be a better way
+    lists:flatten(io_lib:format("1:~s:~s,", [integer_to_list(string:len(String)), String])).
+
+%% TODO: Unpack according to spec at https://github.com/LearnBoost/Socket.IO-node
+unpack_message(Data) ->
+    Data.

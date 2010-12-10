@@ -21,6 +21,7 @@ run() ->
                  {listen, {0,0,0,0}},
                  {docroot, Docroot},
                  {appmods, [{"/updates", chloe_yaws_updates},
+                            {"/socket.io/websocket", chloe_yaws_updates},
                             {"/send", chloe_yaws_send},
                             {"/", chloe_yaws_root}]}],
     {ok, SCList, GC, ChildSpecs} =
