@@ -17,7 +17,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--record(state, {websocket}).
+-record(state, {websocket, session_id}).
 
 %%--------------------------------------------------------------------
 %% API
@@ -48,8 +48,8 @@ handle_cast({send, Data}, State) ->
 handle_info({ok, WebSocket}, State) ->
     error_logger:info_msg("Websocket started on ~p~n", [self()]),
     chloe_channel_store:subscribe("/all", self()),
-    perform_session_handshake(WebSocket),
-    {noreply, State#state{websocket = WebSocket}};
+    SessionId = perform_session_handshake(WebSocket),
+    {noreply, State#state{websocket = WebSocket, session_id = SessionId}};
 handle_info({tcp, _WebSocket, DataFrame}, State) ->
     Data = yaws_api:websocket_unframe_data(DataFrame),
     Message = unpack_message(Data),
@@ -89,7 +89,12 @@ send_to_ruby(Data) ->
                   [], [{sync, false}]).
 
 perform_session_handshake(WebSocket) ->
-    yaws_api:websocket_send(WebSocket, "3:3:253,").
+    {ok, SessionIdInt} = chloe_session_manager:create(self()),
+    SessionId = integer_to_list(SessionIdInt),
+    Message = lists:flatten(io_lib:format("3:~s:~s,", [integer_to_list(string:len(SessionId)),
+                                                       SessionId])),
+    yaws_api:websocket_send(WebSocket, Message),
+    SessionId.
 
 pack_message(Data) ->
     % Extra ':' on the front is to separate out the annotations section

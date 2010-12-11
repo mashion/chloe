@@ -35,7 +35,7 @@ fetch_subscribers(Channel) ->
 %%--------------------------------------------------------------------
 
 init([]) ->
-    ets:new(?TABLE_ID, [public, named_table]),
+    ets:new(?TABLE_ID, [protected, named_table]),
     {ok, #state{}}.
 
 handle_call({fetch_subscribers, Channel}, _From, State) ->

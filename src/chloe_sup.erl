@@ -26,9 +26,10 @@ start_link() ->
 init([]) ->
     Yaws = ?CHILD(chloe_yaws, worker),
     ChannelStore = ?CHILD(chloe_channel_store, worker),
+    SessionManager = ?CHILD(chloe_session_manager, worker),
     WebSocket = {chloe_websocket_sup, {chloe_websocket_sup, start_link, []},
                  permanent, 5000, supervisor, [chloe_websocket]},
-    Children = [Yaws, ChannelStore, WebSocket],
+    Children = [Yaws, ChannelStore, SessionManager, WebSocket],
     RestartStrategy = {one_for_one, 5, 10},
     {ok, {RestartStrategy, Children}}.
 
