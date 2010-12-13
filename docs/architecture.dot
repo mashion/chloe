@@ -1,0 +1,27 @@
+graph architecture {
+  chloe_yaws_updates -- websocket;
+  chloe_yaws_updates -- longpoll;
+  chloe_yaws_updates -- flash;
+  chloe_yaws_updates -- others;
+
+  subgraph cluster_transports {
+    label = "transports";
+    websocket;
+    longpoll;
+    flash;
+    others;
+  }
+
+  websocket -- session;
+  longpoll -- session;
+  flash -- session;
+  others -- session;
+
+  chloe_yaws_send -- session;
+  session -- channel;
+
+  session -- socket_io_parser;
+
+  chloe_yaws_send -- channel;
+
+}
