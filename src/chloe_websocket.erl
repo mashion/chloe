@@ -40,7 +40,7 @@ handle_call(_, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({send, Data}, State) ->
-    error_logger:info_msg("Sending back: ~p", pack_message(Data)),
+    error_logger:info_msg("Sending back: ~p", [pack_message(Data)]),
     yaws_api:websocket_send(State#state.websocket, pack_message(Data)),
     {noreply, State}.
 
