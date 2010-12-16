@@ -39,7 +39,7 @@ handle_call({create, Pid}, _From, State) ->
     SessionId = State#state.next_session_id,
     ets:insert(?TABLE_ID, {SessionId, Pid}),
     NewState = State#state{next_session_id=SessionId + 1},
-    {reply, {ok, SessionId}, NewState}.
+    {reply, {ok, integer_to_list(SessionId)}, NewState}.
 
 handle_cast(_Request, State) ->
     {noreply, State}.
