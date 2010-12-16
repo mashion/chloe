@@ -91,8 +91,7 @@ send_to_ruby(Data) ->
 perform_session_handshake(WebSocket) ->
     {ok, SessionIdInt} = chloe_session_manager:create(self()),
     SessionId = integer_to_list(SessionIdInt),
-    Message = lists:flatten(io_lib:format("3:~s:~s,", [integer_to_list(string:len(SessionId)),
-                                                       SessionId])),
+    Message = chloe_socketio_protocol:pack(handshake, SessionId),
     yaws_api:websocket_send(WebSocket, Message),
     SessionId.
 

@@ -10,3 +10,6 @@ parse_message_with_empty_realm_test() ->
 
 pack_message_test() ->
     "1:6::hello," = chloe_socketio_protocol:pack(message, "", "hello").
+
+pack_handshake_test() ->
+    "3:3:256," = chloe_socketio_protocol:pack(handshake, "256").

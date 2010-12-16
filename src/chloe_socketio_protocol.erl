@@ -3,6 +3,7 @@
 %% API
 -export([
          parse/1,
+         pack/2,
          pack/3
         ]).
 
@@ -22,6 +23,9 @@ pack(message, Realm, Data) when is_binary(Data) ->
 pack(message, Realm, Data) ->
     Body = lists:append([Realm, ":", Data]),
     lists:append(["1:", integer_to_list(length(Body)), ":", Body, ","]).
+
+pack(handshake, SessionId) ->
+    lists:append(["3:", integer_to_list(length(SessionId)), ":", SessionId, ","]).
 
 %%--------------------------------------------------------------------
 %% internal functions
