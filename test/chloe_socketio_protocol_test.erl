@@ -8,3 +8,5 @@ parse_message_with_empty_realm_test() ->
     ""      = Realm,
     "hello" = Data.
 
+pack_message_test() ->
+    "1:6::hello," = chloe_socketio_protocol:pack(message, "", "hello").

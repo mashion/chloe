@@ -97,11 +97,7 @@ perform_session_handshake(WebSocket) ->
     SessionId.
 
 pack_message(Data) ->
-    % Extra ':' on the front is to separate out the annotations section
-    % of the protocol
-    String = string:concat(":", binary_to_list(Data)),
-    %% There must be a better way
-    lists:flatten(io_lib:format("1:~s:~s,", [integer_to_list(string:len(String)), String])).
+    chloe_socketio_protocol:pack(message, "", Data).
 
 %% TODO: Unpack according to spec at https://github.com/LearnBoost/Socket.IO-node
 unpack_message(Data) ->

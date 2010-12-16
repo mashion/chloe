@@ -2,7 +2,8 @@
 
 %% API
 -export([
-         parse/1
+         parse/1,
+         pack/3
         ]).
 
 %%--------------------------------------------------------------------
@@ -15,6 +16,12 @@ parse(Data) ->
     {ok, Realm, Length2, Body3} = parse_realm(Length, Body2),
     {ok, PayLoad} = parse_payload(Length2, Body3),
     {ok, Type, Realm, PayLoad}.
+
+pack(message, Realm, Data) when is_binary(Data) ->
+    pack(message, Realm, binary_to_list(Data));
+pack(message, Realm, Data) ->
+    Body = lists:append([Realm, ":", Data]),
+    lists:append(["1:", integer_to_list(length(Body)), ":", Body, ","]).
 
 %%--------------------------------------------------------------------
 %% internal functions
