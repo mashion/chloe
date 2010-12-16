@@ -6,4 +6,3 @@ parse_message_test() ->
     {ok, Type, Data} = chloe_socketio_protocol:parse(<<"1:5:hello,">>),
     message = Type,
     "hello" = Data.
-

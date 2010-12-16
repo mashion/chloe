@@ -27,11 +27,11 @@ parse_type([TypeId | [$: | Data]]) ->
 parse_length(Data) ->
     parse_length(Data, "").
 
-parse_length([LengthChar | [$: | Data]], LengthCars) ->
-    Length = list_to_integer(LengthCars ++ [LengthChar]),
+parse_length([LengthChar | [$: | Data]], LengthChars) ->
+    Length = list_to_integer(lists:reverse([LengthChar | LengthChars])),
     {ok, Length, Data};
-parse_length([LengthChar | Data], LengthCars) ->
-    parse_length(Data, LengthCars ++ [LengthChar]).
+parse_length([LengthChar | Data], LengthChars) ->
+    parse_length(Data, [LengthChar | LengthChars]).
 
 % The Length + 1 is the length of the message, plus 1 for the ',' at 
 % the end
