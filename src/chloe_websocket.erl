@@ -54,7 +54,7 @@ handle_info({tcp, _WebSocket, DataFrame}, State) ->
     Data = yaws_api:websocket_unframe_data(DataFrame),
     Message = unpack_message(Data),
     error_logger:info_msg("Got data from WebSocket: ~p~n", [Message]),
-    send_to_ruby(Data),
+    send_to_ruby(Message),
     {noreply, State};
 handle_info({tcp_closed, _WebSocket}, State) ->
     {stop, ok, State};
@@ -105,4 +105,5 @@ pack_message(Data) ->
 
 %% TODO: Unpack according to spec at https://github.com/LearnBoost/Socket.IO-node
 unpack_message(Data) ->
-    Data.
+    {ok, message, _, Message} = chloe_socketio_protocol:parse(Data),
+    Message.
