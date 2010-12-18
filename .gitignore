@@ -2,4 +2,5 @@ deps
 ebin/*.beam
 ebin/*.app
 NOTES.markdown
+.eunit
 
