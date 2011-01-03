@@ -10,7 +10,8 @@
 -export([init/1]).
 
 %% Helper macro for declaring children of supervisor
--define(CHILD(I, Type), {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
+-define(WORKER(I), {I, {I, start_link, []}, permanent, 5000, worker, [I]}).
+-define(SUPERVISOR(I, Child), {I, {I, start_link, []}, permanent, 5000, supervisor, [I, Child]}).
 
 %% ===================================================================
 %% API functions
@@ -24,12 +25,12 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Yaws = ?CHILD(chloe_yaws, worker),
-    ChannelStore = ?CHILD(chloe_channel_store, worker),
-    SessionManager = ?CHILD(chloe_session_manager, worker),
-    WebSocket = {chloe_websocket_sup, {chloe_websocket_sup, start_link, []},
-                 permanent, 5000, supervisor, [chloe_websocket]},
-    Children = [Yaws, ChannelStore, SessionManager, WebSocket],
+    Yaws = ?WORKER(chloe_yaws),
+    ChannelStore = ?WORKER(chloe_channel_store),
+    SessionManager = ?WORKER(chloe_session_manager),
+    WebSocketSup = ?SUPERVISOR(chloe_websocket_sup, chloe_websocket),
+    SessionSup = ?SUPERVISOR(chloe_session_sup, chloe_session),
+    Children = [Yaws, ChannelStore, SessionManager, WebSocketSup, SessionSup],
     RestartStrategy = {one_for_one, 5, 10},
     {ok, {RestartStrategy, Children}}.
 

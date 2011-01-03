@@ -16,6 +16,6 @@ send_to_all_subscribers(Data) ->
     {ok, Subscribers} = chloe_channel_store:fetch_subscribers("/all"),
     lists:foreach(
         fun(Pid) ->
-            chloe_websocket:send(Pid, Data)
+            chloe_session:send_to_browser(Pid, Data)
         end,
         Subscribers).

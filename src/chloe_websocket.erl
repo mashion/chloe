@@ -36,7 +36,7 @@ send(Pid, Data) ->
 init([]) ->
     {ok, #state{}}.
 
-handle_call(_, _From, State) ->
+handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({send, Data}, State) ->
@@ -47,14 +47,15 @@ handle_cast({send, Data}, State) ->
 %% This is where our websocket comms will come in
 handle_info({ok, WebSocket}, State) ->
     error_logger:info_msg("Websocket started on ~p~n", [self()]),
-    chloe_channel_store:subscribe("/all", self()),
     SessionId = perform_session_handshake(WebSocket),
-    {noreply, State#state{websocket = WebSocket, session_id = SessionId}};
+    {noreply, State#state{websocket = WebSocket,
+                          session_id = SessionId}};
 handle_info({tcp, _WebSocket, DataFrame}, State) ->
     Data = yaws_api:websocket_unframe_data(DataFrame),
     Message = unpack_message(Data),
     error_logger:info_msg("Got data from WebSocket: ~p~n", [Message]),
-    send_to_ruby(Message),
+    chloe_session:send_to_server(session_pid(State#state.session_id),
+                                 Message),
     {noreply, State};
 handle_info({tcp_closed, _WebSocket}, State) ->
     {stop, ok, State};
@@ -73,21 +74,6 @@ code_change(_OldVsn, State, _Extra) ->
 %% internal functions
 %%--------------------------------------------------------------------
 
-send_to_all_subscribers(Data) ->
-    {ok, Subscribers} = chloe_channel_store:fetch_subscribers("/all"),
-    lists:foreach(
-        fun(Pid) ->
-            chloe_websocket:send(Pid, Data)
-        end,
-        Subscribers).
-
-send_to_ruby(Data) ->
-    httpc:request(post, {"http://localhost:4567/updates",
-                         [],
-                         "text/plain",
-                         Data},
-                  [], [{sync, false}]).
-
 perform_session_handshake(WebSocket) ->
     {ok, SessionId} = chloe_session_manager:create(self()),
     Message = chloe_socketio_protocol:pack(handshake, SessionId),
@@ -101,3 +87,7 @@ pack_message(Data) ->
 unpack_message(Data) ->
     {ok, message, _, Message} = chloe_socketio_protocol:parse(Data),
     Message.
+
+session_pid(SessionId) ->
+    {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),
+    SessionPid.

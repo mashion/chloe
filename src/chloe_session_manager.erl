@@ -5,7 +5,8 @@
 %% API
 -export([
          start_link/0,
-         create/1
+         create/1,
+         fetch_pid/1
         ]).
 
 %% gen_server callbacks
@@ -27,6 +28,12 @@ start_link() ->
 create(Pid) ->
     gen_server:call(?SERVER, {create, Pid}).
 
+fetch_pid(SessionId) ->
+    case ets:lookup(?TABLE_ID, SessionId) of
+        [{SessionId, SessionPid}] -> {ok, SessionPid};
+        []                        -> {error, session_not_found}
+    end.
+
 %%--------------------------------------------------------------------
 %% gen_server callbacks
 %%--------------------------------------------------------------------
@@ -37,7 +44,8 @@ init([]) ->
 
 handle_call({create, Pid}, _From, State) ->
     SessionId = State#state.next_session_id,
-    ets:insert(?TABLE_ID, {SessionId, Pid}),
+    {ok, SessionPid} = chloe_session_sup:start_child(Pid),
+    ets:insert(?TABLE_ID, {SessionId, SessionPid}),
     NewState = State#state{next_session_id=SessionId + 1},
     {reply, {ok, integer_to_list(SessionId)}, NewState}.
 
