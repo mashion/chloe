@@ -1,3 +1,9 @@
+desc "Install all necessary dependencies"
+task :bootstrap do
+  sh("rebar get-deps") rescue :expected_to_fail
+  sh("cd deps/yaws; rebar compile")
+end
+
 desc "Start an erlang console"
 task :console => :compile do
   sh(erl)
