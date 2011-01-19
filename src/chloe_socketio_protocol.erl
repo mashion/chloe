@@ -7,6 +7,8 @@
          pack/3
         ]).
 
+-include_lib("./chloe.hrl").
+
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
@@ -15,8 +17,9 @@ parse(Data) ->
     {ok, Type, Body} = parse_type(binary_to_list(Data)),
     {ok, Length, Body2} = parse_length(Body),
     {ok, Realm, Length2, Body3} = parse_realm(Length, Body2),
-    {ok, PayLoad} = parse_payload(Length2, Body3),
-    {ok, Type, Realm, PayLoad}.
+    {ok, Payload} = parse_payload(Length2, Body3),
+    {ok, #socketio_msg{type = Type, data = Payload,
+                       modifiers = [{realm, Realm}]}}.
 
 pack(message, Realm, Data) when is_binary(Data) ->
     pack(message, Realm, binary_to_list(Data));

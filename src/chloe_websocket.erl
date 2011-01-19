@@ -18,6 +18,7 @@
          terminate/2, code_change/3]).
 
 -record(state, {websocket, session_id}).
+-include_lib("./chloe.hrl").
 
 %%--------------------------------------------------------------------
 %% API
@@ -85,7 +86,7 @@ pack_message(Data) ->
 
 %% TODO: Unpack according to spec at https://github.com/LearnBoost/Socket.IO-node
 unpack_message(Data) ->
-    {ok, message, _, Message} = chloe_socketio_protocol:parse(Data),
+    {ok, #socketio_msg{type=message, data=Message}} = chloe_socketio_protocol:parse(Data),
     Message.
 
 session_pid(SessionId) ->
