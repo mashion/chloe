@@ -14,12 +14,7 @@
 %%--------------------------------------------------------------------
 
 parse(Data) ->
-    {ok, Type, Body} = parse_type(binary_to_list(Data)),
-    {ok, Length, Body2} = parse_length(Body),
-    {ok, Realm, Length2, Body3} = parse_realm(Length, Body2),
-    {ok, Payload} = parse_payload(Length2, Body3),
-    {ok, #socketio_msg{type = Type, data = Payload,
-                       modifiers = [{realm, Realm}]}}.
+    parse(Data, #socketio_msg{}).
 
 pack(message, Realm, Data) when is_binary(Data) ->
     pack(message, Realm, binary_to_list(Data));
@@ -33,30 +28,19 @@ pack(handshake, SessionId) ->
 %%--------------------------------------------------------------------
 %% internal functions
 %%--------------------------------------------------------------------
-parse_type([TypeId | [$: | Data]]) ->
-    Type = case TypeId of
-               $1 -> message
+%% NOTE: This parse works as long as the realm annotation of the
+%%       Socket.IO protocol is not used. If that annotation is used,
+%%       it will inject an extra ':', which gums up the whole works.
+parse(Data, #socketio_msg{type=undefined} = Message) ->
+    [TypePart, Rest] = binary:split(Data, <<":">>),
+    Type = case list_to_integer(binary_to_list(TypePart)) of
+               1 -> message
            end,
-    {ok, Type, Data}.
+    parse(Rest, Message#socketio_msg{type=Type});
+parse(Data, #socketio_msg{data=undefined} = Message) ->
+    [Length, Rest] = binary:split(Data, <<":">>),
+    [Annotations, Body] = binary:split(Rest, <<":">>),
+    BodyLength = list_to_integer(binary_to_list(Length)) - size(Annotations),
+    BodyLength = size(Body),
+    {ok, Message#socketio_msg{data=binary:part(Body, {0, BodyLength - 1})}}.
 
-parse_length(Data) ->
-    {ok, Length, Rest} = split_at_first($:, Data),
-    {ok, list_to_integer(Length), Rest}.
-
-parse_realm(Length, Data) ->
-    {ok, Realm, Rest} = split_at_first($:, Data),
-    % The '- 1' here is because of the ':' we removed
-    {ok, Realm, Length - length(Realm) - 1, Rest}.
-
-% The Length + 1 is the length of the message, plus 1 for the ',' at 
-% the end
-parse_payload(Length, Data) when length(Data) =:= Length + 1 ->
-    {ok, lists:sublist(Data, Length)}.
-
-split_at_first(Chr, Data) ->
-    split_at_first(Chr, Data, "").
-
-split_at_first(Chr, [Chr | Rest], RetChrs) ->
-    {ok, lists:reverse(RetChrs), Rest};
-split_at_first(Chr, [RetChr | Data], RetChrs) ->
-    split_at_first(Chr, Data, [RetChr | RetChrs]).
