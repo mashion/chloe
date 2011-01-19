@@ -52,7 +52,8 @@ handle_info({ok, WebSocket}, State) ->
     {noreply, State#state{websocket = WebSocket,
                           session_id = SessionId}};
 handle_info({tcp, _WebSocket, DataFrame}, State) ->
-    Data = yaws_api:websocket_unframe_data(DataFrame),
+    error_logger:info_msg("Raw DataFrame: ~p~n", [DataFrame]),
+    Data = yaws_websocket_unframe_data_patched(DataFrame),
     Message = unpack_message(Data),
     error_logger:info_msg("Got data from WebSocket: ~p~n", [Message]),
     chloe_session:send_to_server(session_pid(State#state.session_id),
@@ -84,7 +85,6 @@ perform_session_handshake(WebSocket) ->
 pack_message(Data) ->
     chloe_socketio_protocol:pack(message, "", Data).
 
-%% TODO: Unpack according to spec at https://github.com/LearnBoost/Socket.IO-node
 unpack_message(Data) ->
     {ok, #socketio_msg{type=message, data=Message}} = chloe_socketio_protocol:parse(Data),
     Message.
@@ -92,3 +92,38 @@ unpack_message(Data) ->
 session_pid(SessionId) ->
     {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),
     SessionPid.
+
+%%--------------------------------------------------------------------
+%% Patched functions from yaws_websocket.erl
+%%--------------------------------------------------------------------
+yaws_websocket_unframe_data_patched(DataFrames) ->
+    <<Type, _/bitstring>> = DataFrames,
+    case Type of
+    T when (T =< 127) ->
+        %% {ok, FF_Ended_Frame} = re:compile("^.(.*)\\xFF(.*?)", [ungreedy, dotall]),
+        FF_Ended_Frame = {re_pattern,2,0,
+                  <<69,82,67,80,79,0,0,0,20,2,0,0,5,0,0,0,2,0,0,0,
+                                0,0,255,2,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                                0,0,0,0,0,0,93,0,27,25,12,94,0,7,0,1,57,12,84,
+                                0,7,27,255,94,0,7,0,2,56,12,84,0,7,84,0,27,0>>},
+        {match, [Data, _NextFrame]} =
+        re:run(DataFrames, FF_Ended_Frame,
+               [{capture, all_but_first, binary}]),
+        Data;
+    _ -> %% Type band 16#80 =:= 16#80
+        {Length, LenBytes} = yaws_websockets_unpack_length(DataFrames, 0, 0),
+        <<_, _:LenBytes/bytes, Data:Length/bytes,
+         _NextFrame/bitstring>> = DataFrames,
+        Data
+    end.
+
+yaws_websockets_unpack_length(Binary, LenBytes, Length) ->
+    <<_, _:LenBytes/bytes, B, _/bitstring>> = Binary,
+    B_v = B band 16#7F,
+    NewLength = (Length * 128) + B_v,
+    case B band 16#80 of
+16#80 ->
+        yaws_websockets_unpack_length(Binary, LenBytes + 1, NewLength);
+    0 ->
+        {NewLength, LenBytes + 1}
+    end.
