@@ -163,6 +163,8 @@ expect_cast(Mock, Callback) ->
 assert_expectations(Mock) when is_pid(Mock) ->
     assert_expectations([Mock]);
 assert_expectations([H|T]) ->
+    timer:sleep(1), % This sleep(1) seems to give the other processes time
+                    % to send their requests through.
     gen_server:call(H, assert_expectations),
     ok = assert_expectations(T);
 assert_expectations([]) ->
