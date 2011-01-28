@@ -15,15 +15,14 @@ start_link() ->
 run() ->
     Id = "embedded",
     GconfList = [{id, Id}],
-    Docroot = "/tmp",
+    Docroot = "./public",
     SconfList = [{port, 8888},
                  {servername, "foobar"},
                  {listen, {0,0,0,0}},
                  {docroot, Docroot},
                  {appmods, [{"/updates", chloe_yaws_updates},
                             {"/socket.io/websocket", chloe_yaws_updates},
-                            {"/send", chloe_yaws_send},
-                            {"/", chloe_yaws_root}]}],
+                            {"/send", chloe_yaws_send}]}],
     {ok, SCList, GC, ChildSpecs} =
         yaws_api:embedded_start_conf(Docroot, SconfList, GconfList, Id),
     [supervisor:start_child(?SUPERVISOR, Ch) || Ch <- ChildSpecs],

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chloe</title>
+  </head>
+  <body>
+    <h1>Hello, I'm Chloe</h1>
+    <script type="text/javascript" src="chloe.js"></script>
+  </body>
+</html>
