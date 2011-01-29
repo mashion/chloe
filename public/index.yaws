@@ -4,7 +4,13 @@
     <title>Chloe</title>
   </head>
   <body>
-    <h1>Hello, I'm Chloe</h1>
+    <h1>Hello, I am Chloe.</h1>
+    <p>Look at my source to see how to use chloe.</p>
     <script type="text/javascript" src="chloe.js"></script>
+    <script type="text/javascript">
+      Chloe.init(function () {
+        console.log("Init was a success");
+      });
+    </script>
   </body>
 </html>
