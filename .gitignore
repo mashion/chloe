@@ -3,4 +3,5 @@ ebin/*.beam
 ebin/*.app
 NOTES.markdown
 .eunit
-
+*.log
+foobar.access
