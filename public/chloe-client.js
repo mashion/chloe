@@ -7,16 +7,27 @@ Chloe = function (options) {
 };
 
 Chloe.prototype = {
+  // Public API
   connect: function (callback) {
     this.transport.connect(callback);
   },
   onmessage: function (callback) {
-    this.transport.onmessage(callback);
+    var self = this;
+    this.onmessageCallback = callback;
+    this.transport.onmessage(function (message) {
+      self.handleMessage(Chloe.Message.unpack(message));
+    });
   },
   onclose: function (callback) {
     this.transport.onclose(callback);
   },
-  send: function (message) {
-    this.transport.send(message);
+  send: function (data) {
+    var message = Chloe.Message.pack(data);
+    this.transport.send(message.packed);
+  },
+
+  // Internal functions
+  handleMessage: function (message) {
+    this.onmessageCallback(message.data);
   }
 };

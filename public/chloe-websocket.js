@@ -5,13 +5,9 @@ Chloe.WebSocketTransport = function (options) {
 };
 
 Chloe.WebSocketTransport.prototype = {
-  attachToSocket: function (attribute, callback) {
-    this.socketAttributes[attribute] = callback;
-    if (this.socket) {
-      this.socket[attribute] = this.socketAttributes[attribute];
-    }
-  },
+  // Public API
   connect: function (callback) {
+    var self = this;
     this.socket = new WebSocket("ws://" + this.host + ":" + this.port + "/chloe/websocket");
     this.socket.onopen = callback;
     for (var i in this.socketAttributes) {
@@ -22,9 +18,17 @@ Chloe.WebSocketTransport.prototype = {
     this.attachToSocket('onclose', callback);
   },
   onmessage: function (callback) {
-    this.attachToSocket('onmessage', callback);
+    this.attachToSocket('onmessage', function (message) { callback(message.data) });
   },
   send: function (message) {
     this.socket.send(message);
+  },
+
+  // Internal helpers
+  attachToSocket: function (attribute, callback) {
+    this.socketAttributes[attribute] = callback;
+    if (this.socket) {
+      this.socket[attribute] = this.socketAttributes[attribute];
+    }
   }
 };

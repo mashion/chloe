@@ -9,6 +9,7 @@
     <script type="text/javascript" src="bert.js"></script>
     <script type="text/javascript" src="chloe-client.js"></script>
     <script type="text/javascript" src="chloe-websocket.js"></script>
+    <script type="text/javascript" src="chloe-message.js"></script>
     <script type="text/javascript" src="demo.js"></script>
   </body>
 </html>

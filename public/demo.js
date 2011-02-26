@@ -1,8 +1,7 @@
 var chloe = new Chloe();
 
 chloe.onmessage(function (message) {
-  console.log('I got a message too: ');
-  console.dir(message);
+  console.log('I got a message too: ' + message);
 });
 
 chloe.onclose(function () {
