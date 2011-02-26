@@ -13,6 +13,9 @@ Chloe.prototype = {
   onmessage: function (callback) {
     this.transport.onmessage(callback);
   },
+  onclose: function (callback) {
+    this.transport.onclose(callback);
+  },
   send: function (message) {
     this.transport.send(message);
   }
