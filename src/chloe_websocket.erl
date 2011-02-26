@@ -78,16 +78,15 @@ code_change(_OldVsn, State, _Extra) ->
 
 perform_session_handshake(WebSocket) ->
     {ok, SessionId} = chloe_session_manager:create(self()),
-    Message = chloe_socketio_protocol:pack(handshake, SessionId),
-    yaws_api:websocket_send(WebSocket, Message),
+%    Message = chloe_socketio_protocol:pack(handshake, SessionId),
+%    yaws_api:websocket_send(WebSocket, Message),
     SessionId.
 
 pack_message(Data) ->
-    chloe_socketio_protocol:pack(message, "", Data).
+    Data.
 
 unpack_message(Data) ->
-    {ok, #socketio_msg{type=message, data=Message}} = chloe_socketio_protocol:parse(Data),
-    Message.
+    Data.
 
 session_pid(SessionId) ->
     {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),

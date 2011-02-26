@@ -20,8 +20,7 @@ run() ->
                  {servername, "foobar"},
                  {listen, {0,0,0,0}},
                  {docroot, Docroot},
-                 {appmods, [{"/updates", chloe_yaws_updates},
-                            {"/socket.io/websocket", chloe_yaws_updates},
+                 {appmods, [{"/chloe/websocket", chloe_yaws_updates},
                             {"/send", chloe_yaws_send}]}],
     {ok, SCList, GC, ChildSpecs} =
         yaws_api:embedded_start_conf(Docroot, SconfList, GconfList, Id),

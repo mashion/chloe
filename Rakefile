@@ -24,6 +24,12 @@ task :test do
   sh("rebar app=chloe eunit")
 end
 
+desc "Run demo echo server"
+task :demo do
+  require './support/echo_server'
+  Sinatra::Application.run!
+end
+
 def erl(extra="")
   "erl -pa ebin -pa deps/yaws/ebin #{extra}"
 end
