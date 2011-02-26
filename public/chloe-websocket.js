@@ -6,10 +6,10 @@ Chloe.WebSocketTransport = function (options) {
 Chloe.WebSocketTransport.prototype = {
   connect: function (callback) {
     this.socket = new WebSocket("ws://" + this.host + ":" + this.port + "/socket.io/websocket");
+    this.socket.onopen = callback;
     if (this.messageCallback) {
       this.socket.onmessage = this.messageCallback;
     }
-    callback();
   },
   onmessage: function (callback) {
     this.messageCallback = callback;
