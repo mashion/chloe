@@ -18,7 +18,9 @@ Chloe.WebSocketTransport.prototype = {
     this.attachToSocket('onclose', callback);
   },
   onmessage: function (callback) {
-    this.attachToSocket('onmessage', function (message) { callback(message.data) });
+    this.attachToSocket('onmessage', function (message) {
+      callback(message.data)
+    });
   },
   send: function (message) {
     this.socket.send(message);

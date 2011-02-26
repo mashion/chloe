@@ -17,6 +17,8 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+-define(VERSION, 1).
+
 -record(state, {websocket, session_id}).
 -include_lib("./chloe.hrl").
 
@@ -76,21 +78,26 @@ code_change(_OldVsn, State, _Extra) ->
 %% internal functions
 %%--------------------------------------------------------------------
 
-perform_session_handshake(WebSocket) ->
+perform_session_handshake(_WebSocket) ->
     {ok, SessionId} = chloe_session_manager:create(self()),
 %    Message = chloe_socketio_protocol:pack(handshake, SessionId),
 %    yaws_api:websocket_send(WebSocket, Message),
     SessionId.
 
 pack_message(Data) ->
-    Data.
+    json:encode({struct, [{data, Data}, {version, ?VERSION}]}).
 
 unpack_message(Data) ->
-    Data.
+    {ok, {struct, PropList}} = json:decode_string(binary_to_list(Data)),
+    check_version(PropList),
+    proplists:get_value(data, PropList).
 
 session_pid(SessionId) ->
     {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),
     SessionPid.
+
+check_version(PropList) ->
+    ?VERSION = proplists:get_value(version, PropList).
 
 %%--------------------------------------------------------------------
 %% Patched functions from yaws_websocket.erl

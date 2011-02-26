@@ -10,6 +10,6 @@ chloe.onclose(function () {
 
 chloe.connect(function () {
   console.log('Holy shit, connected!');
-  chloe.send('ZOMG I sent a message!');
+  chloe.send('A');
 });
 

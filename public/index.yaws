@@ -6,7 +6,6 @@
   <body>
     <h1>Hello, I am Chloe.</h1>
     <p>Look at my source to see how to use chloe.</p>
-    <script type="text/javascript" src="bert.js"></script>
     <script type="text/javascript" src="chloe-client.js"></script>
     <script type="text/javascript" src="chloe-websocket.js"></script>
     <script type="text/javascript" src="chloe-message.js"></script>
