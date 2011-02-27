@@ -15,7 +15,7 @@ Installation
         rake server
 
 - get sinatra (for the ruby demo app, gem install sinatra)
-- in another terminal window, `ruby support/echo_server.rb`
+- in another terminal window, `rake demo`
 - Point your browser at http://localhost:8888 and open up the javascript console
 - In the console:
 
