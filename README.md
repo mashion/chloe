@@ -17,11 +17,9 @@ Installation
 - get sinatra (for the ruby demo app, gem install sinatra)
 - in another terminal window, `rake demo`
 - Point your browser at http://localhost:8888 and open up the javascript console
-- In the console:
+- demo.js sets up a chloe variable that is already connected to the server, do the following in the console:
 
-        ws = new WebSocket("ws://localhost:8888/updates");
-        ws.onopen = function (m) { ws.send("Patch me through"); };
-        ws.onmessage = function (m) { console.log(m.data) };
+        chloe.send("hi mom");
 
 - Relish the awesome.
 - To stop Chloe, enter "q()." back in erlang
