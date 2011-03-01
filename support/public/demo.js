@@ -1,4 +1,4 @@
-var chloe = new Chloe();
+var chloe = new Chloe({host: 'localhost', port: 8888});
 
 chloe.onmessage(function (message) {
   console.log('I got a message too: ' + message);
