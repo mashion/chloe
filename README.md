@@ -3,6 +3,13 @@ Chloe
 
 A realtime web server that doesn't suck.
 
+Caveats
+-------
+
+Chloe currently only works with browsers that support websockets. We've tested
+it with Safari and Chrome. We'll be rolling out support for more browsers in
+the near future.
+
 Installation
 ------------
 
@@ -17,7 +24,8 @@ Installation
 - get sinatra (for the ruby demo app, gem install sinatra)
 - in another terminal window, `rake demo`
 - Point your browser at http://localhost:8888 and open up the javascript console
-- demo.js sets up a chloe variable that is already connected to the server, do the following in the console:
+- demo.js sets up a chloe variable that is already connected to the server, do
+  the following in the console:
 
         chloe.send("hi mom");
 
