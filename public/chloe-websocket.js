@@ -1,14 +1,16 @@
-Chloe.WebSocketTransport = function (options) {
+Chloe.Transport.WebSocket = function (options) {
+  Chloe.Transport.Base.mixin(this);
   this.host = options.host;
   this.port = options.port;
+  this.protocol = "ws";
   this.socketAttributes = {};
 };
 
-Chloe.WebSocketTransport.prototype = {
+Chloe.Transport.WebSocket.prototype = {
   // Public API
   connect: function (callback) {
     var self = this;
-    this.socket = new WebSocket("ws://" + this.host + ":" + this.port + "/chloe/websocket");
+    this.socket = new WebSocket(this.url("/websocket"));
     this.socket.onopen = callback;
     for (var i in this.socketAttributes) {
       this.socket[i] = this.socketAttributes[i];

@@ -2,9 +2,23 @@ Chloe = function (options) {
   options = options || {};
   options.host = options.host || 'localhost';
   options.port = options.port || 8888;
-
-  this.transport = new Chloe.WebSocketTransport(options);
+  this.transport = this.makeTransport(options);
 };
+
+Chloe.Version = '0.0.1';
+Chloe.Transport = {};
+
+// Base utility functions for Chloe Transports
+Chloe.Transport.Base = {
+  url: function (path) {
+    return this.protocol + "://" + this.host + ":" + this.port + "/chloe" + path;
+  },
+  mixin: function (child) {
+    for (var i in this) {
+      child[i] = this[i];
+    }
+  }
+}
 
 Chloe.prototype = {
   // Public API
@@ -29,5 +43,9 @@ Chloe.prototype = {
   // Internal functions
   handleMessage: function (message) {
     this.onmessageCallback(message.data);
+  },
+  makeTransport: function (options) {
+    var Transport = Chloe.Transport[options.transport] || Chloe.Transport.WebSocket;
+    return new Transport(options);
   }
 };
