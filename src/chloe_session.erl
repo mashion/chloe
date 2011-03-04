@@ -6,7 +6,8 @@
 -export([
          start_link/1,
          send_to_server/2,
-         send_to_browser/2
+         subscribe/2,
+         send_to_browser/3
         ]).
 
 %% gen_server callbacks
@@ -25,8 +26,11 @@ start_link(TransportPid) ->
 send_to_server(Pid, Data) ->
     gen_server:cast(Pid, {send_to_server, Data}).
 
-send_to_browser(Pid, Data) ->
-    gen_server:cast(Pid, {send_to_browser, Data}).
+subscribe(Pid, Channel) ->
+    gen_server:cast(Pid, {subscribe, Channel}).
+
+send_to_browser(Pid, Channel, Data) ->
+    gen_server:cast(Pid, {send_to_browser, [Channel, Data]}).
 
 %%--------------------------------------------------------------------
 %% gen_server callbacks
@@ -42,8 +46,12 @@ handle_call(_Request, _From, State) ->
 handle_cast({send_to_server, Data}, State) ->
     send_data_to_server(Data),
     {noreply, State};
-handle_cast({send_to_browser, Data}, State) ->
-    gen_server:cast(State#state.transport_pid, {send, Data}),
+handle_cast({subscribe, Channel}, State) ->
+    error_logger:info_msg("Subscribing to channel ~p~n", [Channel]),
+    chloe_channel_store:subscribe(Channel, self()),
+    {noreply, State};
+handle_cast({send_to_browser, [Channel, Data]}, State) ->
+    gen_server:cast(State#state.transport_pid, {send, [Channel, Data]}),
     {noreply, State}.
 
 handle_info(_Info, State) ->

@@ -10,7 +10,7 @@
 %% API
 -export([
          start_link/0,
-         send/2
+         send/3
         ]).
 
 %% gen_server callbacks
@@ -27,8 +27,8 @@
 start_link() ->
     gen_server:start_link(?MODULE, [], []).
 
-send(Pid, Data) ->
-    gen_server:cast(Pid, {send, Data}).
+send(Pid, Channel, Data) ->
+    gen_server:cast(Pid, {send, [Channel, Data]}).
 
 %%--------------------------------------------------------------------
 %% gen_server callbacks
@@ -40,9 +40,10 @@ init([]) ->
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
-handle_cast({send, Data}, State) ->
-    error_logger:info_msg("Sending back: ~p", [chloe_message:pack(Data)]),
-    yaws_api:websocket_send(State#state.websocket, chloe_message:pack(Data)),
+handle_cast({send, [Channel, Data]}, State) ->
+    Packed = chloe_message:pack(#message{data=Data, channel=Channel}),
+    error_logger:info_msg("Sending back: ~p", [Packed]),
+    yaws_api:websocket_send(State#state.websocket, Packed),
     {noreply, State}.
 
 %% This is where our websocket comms will come in
@@ -55,9 +56,7 @@ handle_info({tcp, _WebSocket, DataFrame}, State) ->
     error_logger:info_msg("Raw DataFrame: ~p~n", [DataFrame]),
     Data = yaws_websocket_unframe_data_patched(DataFrame),
     Message = chloe_message:unpack(Data),
-    error_logger:info_msg("Got data from WebSocket: ~p~n", [Message]),
-    chloe_session:send_to_server(session_pid(State#state.session_id),
-                                 Message),
+    handle_message(Message, State),
     {noreply, State};
 handle_info({tcp_closed, _WebSocket}, State) ->
     {stop, ok, State};
@@ -85,6 +84,21 @@ perform_session_handshake(_WebSocket) ->
 session_pid(SessionId) ->
     {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),
     SessionPid.
+
+handle_message(Message, State) ->
+    case Message#message.type of
+        "channel-subscribe" -> handle_channel_subscribe_message(Message, State);
+        _ -> handle_data_message(Message, State)
+    end.
+
+handle_channel_subscribe_message(Message, State) ->
+    chloe_session:subscribe(session_pid(State#state.session_id),
+                            Message#message.channel).
+
+handle_data_message(Message, State) ->
+    error_logger:info_msg("Got data from WebSocket: ~p~n", [Message#message.data]),
+    chloe_session:send_to_server(session_pid(State#state.session_id),
+                                 Message#message.data).
 
 %%--------------------------------------------------------------------
 %% Patched functions from yaws_websocket.erl

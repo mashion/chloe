@@ -7,6 +7,7 @@
         ]).
 
 -define(VERSION, 1).
+-include_lib("./chloe.hrl").
 
 %%--------------------------------------------------------------------
 %% API
@@ -15,10 +16,16 @@
 unpack(Data) ->
     {ok, {struct, PropList}} = json:decode_string(binary_to_list(Data)),
     check_version(PropList),
-    proplists:get_value(data, PropList).
+    #message{data=proplists:get_value(data, PropList),
+             version=proplists:get_value(version, PropList),
+             type=proplists:get_value(type, PropList),
+             channel=proplists:get_value(channel, PropList)}.
 
-pack(Data) ->
-    json:encode({struct, [{data, Data}, {version, ?VERSION}]}).
+pack(Message) ->
+    json:encode({struct, [{data,    Message#message.data},
+                          {version, ?VERSION},
+                          {type,    Message#message.type},
+                          {channel, Message#message.channel}]}).
 
 %%--------------------------------------------------------------------
 %% Internal functions

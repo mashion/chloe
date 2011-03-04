@@ -42,7 +42,9 @@ Chloe.Message.prototype = {
     if (decoded.version != this.version) {
       throw new Error("Expected message version " + decoded.version + " to match " + this.version);
     }
-    this.data = decoded.data;
+    this.data    = decoded.data;
+    this.channel = decoded.channel;
+    this.type    = decoded.type;
   },
   send: function (transport) {
     transport.send(this.packed);
