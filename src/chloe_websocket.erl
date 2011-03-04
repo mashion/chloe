@@ -52,11 +52,9 @@ handle_info({ok, WebSocket}, State) ->
     SessionId = perform_session_handshake(WebSocket),
     {noreply, State#state{websocket = WebSocket,
                           session_id = SessionId}};
-handle_info({tcp, _WebSocket, DataFrame}, State) ->
-    error_logger:info_msg("Raw DataFrame: ~p~n", [DataFrame]),
-    Data = yaws_websocket_unframe_data_patched(DataFrame),
-    Message = chloe_message:unpack(Data),
-    handle_message(Message, State),
+handle_info({tcp, _WebSocket, DataFrames}, State) ->
+    error_logger:info_msg("Raw DataFrame: ~p~n", [DataFrames]),
+    handle_websocket_frames(DataFrames, State),
     {noreply, State};
 handle_info({tcp_closed, _WebSocket}, State) ->
     {stop, ok, State};
@@ -85,10 +83,18 @@ session_pid(SessionId) ->
     {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),
     SessionPid.
 
-handle_message(Message, State) ->
+handle_message(Data, State) ->
+    Message = chloe_message:unpack(Data),
     case Message#message.type of
         "channel-subscribe" -> handle_channel_subscribe_message(Message, State);
         _ -> handle_data_message(Message, State)
+    end.
+
+handle_websocket_frames(DataFrames, State) ->
+    case yaws_websocket_unframe_data_patched(DataFrames) of
+        {ok, Data, <<>>}       -> handle_message(Data, State);
+        {ok, Data, NextFrames} -> handle_message(Data, State),
+                                  handle_websocket_frames(NextFrames, State)
     end.
 
 handle_channel_subscribe_message(Message, State) ->
@@ -113,10 +119,10 @@ yaws_websocket_unframe_data_patched(DataFrames) ->
                                 0,0,255,2,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                                 0,0,0,0,0,0,93,0,27,25,12,94,0,7,0,1,57,12,84,
                                 0,7,27,255,94,0,7,0,2,56,12,84,0,7,84,0,27,0>>},
-        {match, [Data, _NextFrame]} =
+        {match, [Data, NextFrames]} =
         re:run(DataFrames, FF_Ended_Frame,
                [{capture, all_but_first, binary}]),
-        Data;
+        {ok, Data, NextFrames};
     _ -> %% Type band 16#80 =:= 16#80
         {Length, LenBytes} = yaws_websockets_unpack_length(DataFrames, 0, 0),
         <<_, _:LenBytes/bytes, Data:Length/bytes,

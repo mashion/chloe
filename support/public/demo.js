@@ -11,6 +11,8 @@ chloe.onclose(function () {
 chloe.connect(function () {
   console.log('Holy shit, connected!');
   chloe.send('Ohai Chloe!');
+  chloe.send('your mom');
+  chloe.send('blasdf');
 
   chloe.subscribe('pumpkin', function (message) {
     console.log('Someone was eating pumpkins: ' + message);
