@@ -13,3 +13,6 @@ chloe.connect(function () {
   chloe.send('A');
 });
 
+//chloe.subscribe('pumpkin', function (message) {
+//  console.log('Someone was eating pumpkins: ' + message);
+//});

@@ -17,8 +17,6 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--define(VERSION, 1).
-
 -record(state, {websocket, session_id}).
 -include_lib("./chloe.hrl").
 
@@ -43,8 +41,8 @@ handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({send, Data}, State) ->
-    error_logger:info_msg("Sending back: ~p", [pack_message(Data)]),
-    yaws_api:websocket_send(State#state.websocket, pack_message(Data)),
+    error_logger:info_msg("Sending back: ~p", [chloe_message:pack(Data)]),
+    yaws_api:websocket_send(State#state.websocket, chloe_message:pack(Data)),
     {noreply, State}.
 
 %% This is where our websocket comms will come in
@@ -56,7 +54,7 @@ handle_info({ok, WebSocket}, State) ->
 handle_info({tcp, _WebSocket, DataFrame}, State) ->
     error_logger:info_msg("Raw DataFrame: ~p~n", [DataFrame]),
     Data = yaws_websocket_unframe_data_patched(DataFrame),
-    Message = unpack_message(Data),
+    Message = chloe_message:unpack(Data),
     error_logger:info_msg("Got data from WebSocket: ~p~n", [Message]),
     chloe_session:send_to_server(session_pid(State#state.session_id),
                                  Message),
@@ -84,20 +82,9 @@ perform_session_handshake(_WebSocket) ->
 %    yaws_api:websocket_send(WebSocket, Message),
     SessionId.
 
-pack_message(Data) ->
-    json:encode({struct, [{data, Data}, {version, ?VERSION}]}).
-
-unpack_message(Data) ->
-    {ok, {struct, PropList}} = json:decode_string(binary_to_list(Data)),
-    check_version(PropList),
-    proplists:get_value(data, PropList).
-
 session_pid(SessionId) ->
     {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),
     SessionPid.
-
-check_version(PropList) ->
-    ?VERSION = proplists:get_value(version, PropList).
 
 %%--------------------------------------------------------------------
 %% Patched functions from yaws_websocket.erl

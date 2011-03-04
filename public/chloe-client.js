@@ -4,6 +4,7 @@ Chloe = function (options) {
   options.port = options.port || 8888;
 
   this.transport = new Chloe.WebSocketTransport(options);
+  this.channelSubscriptions = {};
 };
 
 Chloe.prototype = {
@@ -23,11 +24,21 @@ Chloe.prototype = {
   },
   send: function (data) {
     var message = Chloe.Message.pack(data);
-    this.transport.send(message.packed);
+    message.send(this.transport);
+  },
+  subscribe: function (channel, callback) {
+    var message = Chloe.Message.channelSubscribe(channel);
+    this.channelSubscriptions[channel] = callback;
+    message.send(this.transport);
   },
 
   // Internal functions
   handleMessage: function (message) {
-    this.onmessageCallback(message.data);
+    var callback = this.channelSubscriptions[message.channel];
+    if (callback) {
+      callback(message.data);
+    } else {
+      this.onmessageCallback(message.data);
+    }
   }
 };
