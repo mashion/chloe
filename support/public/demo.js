@@ -10,15 +10,10 @@ chloe.onclose(function () {
 
 chloe.connect(function () {
   console.log('Holy shit, connected!');
-  chloe.send('A');
-});
+  chloe.send('Ohai Chloe!');
 
-// TODO: We seem to be sending data down the socket too quickly and
-//       causing an error. Need to figure out why.
-//    What we see in Chrome:
-//       Uncaught Error: INVALID_STATE_ERR: DOM Exception 11
-setTimeout(function () {
   chloe.subscribe('pumpkin', function (message) {
     console.log('Someone was eating pumpkins: ' + message);
   });
-}, 1);
+});
+
