@@ -1,7 +1,7 @@
 Chloe = function (options) {
   options = options || {};
   options.host = options.host || 'localhost';
-  options.port = options.port || 8888;
+  options.port = options.port || 8901;
 
   this.transport = new Chloe.WebSocketTransport(options);
   this.channelSubscriptions = {};

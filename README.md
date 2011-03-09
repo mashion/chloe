@@ -94,7 +94,9 @@ Chloe has a single configuration file, `chloe.config`. See
 `chloe.config.example` for an example. Allowed options for the Chloe
 application are:
 
-`application_server_url`: The url for the application server, ex: http://localhost:4567/updates
+  - *application_server_url*: The url for the application server, ex: http://localhost:4567/updates
+  - *port*: The port on which chloe runs (default: 8901)
+  - *log_dir*: Where the Chloe log files will go (default: `.`)
 
 Caveats
 -------
