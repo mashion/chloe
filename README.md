@@ -90,9 +90,11 @@ Sending a message to a specific channel in chloe:
 Configuring Chloe
 -----------------
 
-Sadly, you can't do any configuration right now. If your applicaiton server is
-not running on the same host as Chloe at 4567, then you're borked. Obviously,
-this will not stand. We'll fix it soon, promise!
+Chloe has a single configuration file, `chloe.config`. See
+`chloe.config.example` for an example. Allowed options for the Chloe
+application are:
+
+`application_server_url`: The url for the application server, ex: http://localhost:4567/updates
 
 Caveats
 -------

@@ -68,7 +68,8 @@ code_change(_OldVsn, State, _Extra) ->
 %%--------------------------------------------------------------------
 
 send_data_to_server(Data) ->
-    httpc:request(post, {"http://localhost:4567/updates",
+    {ok, Url} = application:get_env(chloe, application_server_url),
+    httpc:request(post, {Url,
                          [],
                          "text/plain",
                          Data},

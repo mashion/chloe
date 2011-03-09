@@ -1,0 +1,6 @@
+[
+  {chloe,
+    [
+      {application_server_url, "http://localhost:4567/updates"}
+    ]}
+].
