@@ -28,21 +28,34 @@ relay it back to the connected browser [5].
 Installation
 ------------
 
-- Get you some erlang (brew install)
-- Get rebar (brew install or [start here](https://github.com/basho/rebar/wiki/Getting-started))
-- clone this repo
+- Get you some erlang, on a mac:
+
+    brew install erlang
+
+- Get rebar: [start here](https://github.com/basho/rebar/wiki/Getting-started). Or for mac:
+
+    brew install rebar
+
+- Clone this repo:
+
+    git clone https://github.com/mashion/chloe.git
+    cd chloe
+
 - Run these commands
 
-        rake bootstrap
-        rake server
+    rake bootstrap
+    rake server
 
-- get sinatra (for the ruby demo app, gem install sinatra)
-- in another terminal window, `rake demo`
+- get sinatra and run the demo app in another terminal window
+
+    gem install sinatra
+    rake demo
+
 - Point your browser at http://localhost:4567 and open up the javascript console
 - demo.js sets up a chloe variable that is already connected to the server, do
   the following in the console:
 
-        chloe.send("hi mom");
+    chloe.send("hi mom");
 
 - Relish the awesome.
 - To stop Chloe, enter "q()." back in erlang
