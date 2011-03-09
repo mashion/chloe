@@ -30,32 +30,32 @@ Installation
 
 - Get you some erlang, on a mac:
 
-    brew install erlang
+      brew install erlang
 
 - Get rebar: [start here](https://github.com/basho/rebar/wiki/Getting-started). Or for mac:
 
-    brew install rebar
+      brew install rebar
 
 - Clone this repo:
 
-    git clone https://github.com/mashion/chloe.git
-    cd chloe
+      git clone https://github.com/mashion/chloe.git
+      cd chloe
 
 - Run these commands
 
-    rake bootstrap
-    rake server
+      rake bootstrap
+      rake server
 
 - get sinatra and run the demo app in another terminal window
 
-    gem install sinatra
-    rake demo
+      gem install sinatra
+      rake demo
 
 - Point your browser at http://localhost:4567 and open up the javascript console
 - demo.js sets up a chloe variable that is already connected to the server, do
   the following in the console:
 
-    chloe.send("hi mom");
+      chloe.send("hi mom");
 
 - Relish the awesome.
 - To stop Chloe, enter "q()." back in erlang
@@ -107,9 +107,9 @@ Chloe has a single configuration file, `chloe.config`. See
 `chloe.config.example` for an example. Allowed options for the Chloe
 application are:
 
-  - *application_server_url*: The url for the application server, ex: http://localhost:4567/updates
-  - *port*: The port on which chloe runs (default: 8901)
-  - *log_dir*: Where the Chloe log files will go (default: `.`)
+  - **application_server_url**: The url for the application server, ex: http://localhost:4567/updates
+  - **port**: The port on which chloe runs (default: 8901)
+  - **log_dir**: Where the Chloe log files will go (default: `.`)
 
 Caveats
 -------
