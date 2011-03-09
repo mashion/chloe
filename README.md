@@ -48,6 +48,52 @@ Installation
 - To stop Chloe, enter "q()." back in erlang
 - To stop the demo app, use Ctrl+C
 
+JS API
+------
+
+Instantiate a Chloe object:
+
+    var chloe = new Chloe({host: 'localhost', port: 8888});
+
+Define a function for handling incoming messages:
+
+    chloe.onmessage(function (message) {
+      console.log('I got a message: ' + message);
+    });
+
+Connect to Chloe and send a message:
+
+    chloe.connect(function () {
+      console.send('Ohai!');
+    });
+
+Subscribe to a channel (note that we do this within the `connect` callback,
+because subscribing to a channel requires sending a message to Chloe).
+
+    chloe.connect(function () {
+      chloe.subscribe('pumpkin', function (message) {
+        console.log('Someone was eating pumpkins: ' + message);
+      });
+    });
+
+Server Side API
+---------------
+
+Sending a message to Chloe, which will then be sent to all connected browsers:
+
+    curl -d "data=This is the message data" http://localhost:8888/send
+
+Sending a message to a specific channel in chloe:
+
+    curl -d "channel=pumpkins&data=Trotter" http://localhost:8888/send
+
+Configuring Chloe
+-----------------
+
+Sadly, you can't do any configuration right now. If your applicaiton server is
+not running on the same host as Chloe at 4567, then you're borked. Obviously,
+this will not stand. We'll fix it soon, promise!
+
 Caveats
 -------
 
