@@ -1,4 +1,4 @@
--module(chloe_yaws_updates).
+-module(chloe_yaws_websocket).
 
 -include("../deps/yaws/include/yaws_api.hrl").
 
