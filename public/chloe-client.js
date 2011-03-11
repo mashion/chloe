@@ -2,8 +2,13 @@ Chloe = function (options) {
   options = options || {};
   options.host = options.host || 'localhost';
   options.port = options.port || 8901;
+  options.transport = options.transport || 'websocket';
 
-  this.transport = new Chloe.WebSocketTransport(options);
+  var transports = {
+    websocket: Chloe.WebSocketTransport,
+  }
+
+  this.transport = new transports[options.transport](options);
   this.channelSubscriptions = {};
 };
 
