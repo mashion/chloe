@@ -6,6 +6,7 @@ Chloe = function (options) {
 
   var transports = {
     websocket: Chloe.WebSocketTransport,
+    jsonp:     Chloe.JsonpTransport
   }
 
   this.transport = new transports[options.transport](options);

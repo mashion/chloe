@@ -1,5 +1,10 @@
+// Chloe message types:
+// 'connect'
+// 'channel-subscribe'
+
 Chloe.Message = function (options) {
   this.version = Chloe.Message.version;
+  this.id      = options.id;
   this.type    = options.type;
   // TODO (trotter): I don't really like doing this, find a better way.
   this.channel = options.channel;
@@ -34,7 +39,8 @@ Chloe.Message.prototype = {
       type:    this.type,
       channel: this.channel,
       data:    this.data,
-      version: this.version
+      version: this.version,
+      id:      this.id
     });
   },
   unpack: function () {
@@ -45,6 +51,7 @@ Chloe.Message.prototype = {
     this.data    = decoded.data;
     this.channel = decoded.channel;
     this.type    = decoded.type;
+    this.id      = decoded.id;
   },
   send: function (transport) {
     transport.send(this.packed);
