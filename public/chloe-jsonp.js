@@ -15,11 +15,7 @@ Chloe.JsonpTransport.prototype = {
           type: 'connect'
         });
 
-    this.callbacks.onconnect = function (data) {
-      self.callbacks.onconnect = null;
-      self.handleConnect(data);
-      callback();
-    };
+    this.callbacks.onconnect = callback;
 
     message.pack();
     message.send(this);
@@ -53,12 +49,6 @@ Chloe.JsonpTransport.prototype = {
 
   url: function (data) {
     return this.protocol + this.host + ":" + this.port + "/chloe/jsonp.js?data=" + escape(data);
-  },
-
-  handleConnect: function (data) {
-    this.sessionId = data.sessionId;
-    console.log("We're connected with data: ");
-    console.dir(data);
   },
 
   handleError: function () {
