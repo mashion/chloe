@@ -1,6 +1,7 @@
 // Chloe message types:
 // 'connect'
 // 'channel-subscribe'
+// 'message'
 
 Chloe.Message = function (options) {
   this.version = Chloe.Message.version;
@@ -15,8 +16,10 @@ Chloe.Message = function (options) {
 
 Chloe.Message.version = 1;
 
-Chloe.Message.pack = function (data) {
-  var message = new Chloe.Message({data: data});
+Chloe.Message.pack = function (data, sessionId) {
+  var message = new Chloe.Message({data: data,
+                                   type: "message",
+                                   sessionId: sessionId});
   message.pack();
   return message;
 };

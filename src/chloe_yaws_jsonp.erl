@@ -13,7 +13,8 @@ out(A) ->
     Raw = proplists:get_value("data", yaws_api:parse_query(A)),
     Message = chloe_message:unpack(Raw),
     case Message#message.type of
-        "connect" -> handle_connect(Message)
+        "connect" -> handle_connect(Message);
+        "message" -> handle_message(Message)
     end.
 
 %%--------------------------------------------------------------------
@@ -21,16 +22,22 @@ out(A) ->
 %%--------------------------------------------------------------------
 
 handle_connect(Message) ->
-    error_logger:info_msg("The message: ~n~p", [Message]),
     SessionId = create_session(),
-    error_logger:info_msg("Made our session"),
     Packed = chloe_message:pack(#message{session_id=SessionId,
                                          id=Message#message.id,
                                          type=Message#message.type}),
-    error_logger:info_msg("Packed our message"),
     {content,
      "application/javascript",
      string:join(["Chloe.JsonpTransport.response(", Packed, ");"], "")}.
+
+handle_message(Message) ->
+    chloe_session:send_to_server(session_pid(Message#message.session_id),
+                                 Message#message.data),
+    {content, "application/javascript", ""}.
+
+session_pid(SessionId) ->
+    {ok, SessionPid} = chloe_session_manager:fetch_pid(SessionId),
+    SessionPid.
 
 create_session() ->
     %% TODO: We should really tell chloe session manager what it's dealing

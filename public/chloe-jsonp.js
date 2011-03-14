@@ -29,7 +29,6 @@ Chloe.JsonpTransport.prototype = {
     this.callbacks.onclose = callback;
   },
 
-  // Internal functions
   send: function (data) {
     var self = this;
     script = document.createElement('script');
@@ -42,6 +41,7 @@ Chloe.JsonpTransport.prototype = {
     document.body.appendChild(script);
   },
 
+  // Internal functions
   register: function () {
     this.id   = (new Date()).getTime();
     Chloe.JsonpTransport.connections[this.id] = this;

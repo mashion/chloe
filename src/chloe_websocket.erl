@@ -80,7 +80,7 @@ perform_session_handshake(_WebSocket) ->
     SessionId.
 
 session_pid(SessionId) ->
-    {ok, SessionPid} = chloe_session_manager:fetch_pid(list_to_integer(SessionId)),
+    {ok, SessionPid} = chloe_session_manager:fetch_pid(SessionId),
     SessionPid.
 
 handle_message(Data, State) ->
