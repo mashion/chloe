@@ -37,7 +37,7 @@ Chloe.prototype = {
     message.send(this.transport);
   },
   subscribe: function (channel, callback) {
-    var message = Chloe.Message.channelSubscribe(channel);
+    var message = Chloe.Message.channelSubscribe(channel, this);
     this.channelSubscriptions[channel] = callback;
     message.send(this.transport);
   },

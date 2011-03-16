@@ -13,9 +13,10 @@ out(A) ->
     Raw = proplists:get_value("data", yaws_api:parse_query(A)),
     Message = chloe_message:unpack(Raw),
     case Message#message.type of
-        "connect" -> handle_connect(Message);
-        "message" -> handle_message(Message);
-        "poll"    -> handle_poll(Message)
+        "connect"           -> handle_connect(Message);
+        "message"           -> handle_message(Message);
+        "channel-subscribe" -> handle_channel_subscribe(Message);
+        "poll"              -> handle_poll(Message)
     end.
 
 %%--------------------------------------------------------------------
@@ -32,6 +33,11 @@ handle_connect(Message) ->
 handle_message(Message) ->
     chloe_session:send_to_server(session_pid(Message#message.session_id),
                                  Message#message.data),
+    {content, "application/javascript", ""}.
+
+handle_channel_subscribe(Message) ->
+    chloe_session:subscribe(session_pid(Message#message.session_id),
+                            Message#message.channel),
     {content, "application/javascript", ""}.
 
 handle_poll(Message) ->

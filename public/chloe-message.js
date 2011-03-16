@@ -31,8 +31,9 @@ Chloe.Message.unpack = function (packed) {
   return message;
 }
 
-Chloe.Message.channelSubscribe = function (channel) {
+Chloe.Message.channelSubscribe = function (channel, client) {
   var message = new Chloe.Message({type: "channel-subscribe",
+                                   sessionId: client.sessionId,
                                    channel: channel});
   message.pack();
   return message;
