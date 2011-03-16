@@ -1,39 +1,31 @@
 Chloe.Transport.XHR = function (options) {
   Chloe.Transport.Base.mixin(this);
   this.init(options);
+  this.detectXhrTechnique();
 };
 
 Chloe.Transport.XHR.prototype = {
   // Transport functions
   connect: function (callback) {
-    var message = new Chloe.Message({
+    var self = this,
+        message = new Chloe.Message({
           type: 'connect'
         });
 
-    this.callbacks.onconnect = callback;
-    this.detectXhrTechnique();
-
     message.pack();
-    message.send(this);
+    this.postRequest(message.packed, function (data) {
+       self.sessionId = data.sessionId;
+       self.listenForMessages();
+       callback(message);
+    });
   },
 
-  send: function (message) {
-    var self = this,
-        url = this.makeUrl('POST');
-    this.xhr = this.request('POST', url);
-    this.xhr.onreadystatechange = function(){
-      var status;
-      if (self.xhr.readyState == 4){
-        self.xhr.onreadystatechange = function() {};
-        try { status = self.xhr.status; } catch(e){}
-        if (status == 200){
-          console.log(self.xhr.responseText);
-        } else {
-          console.log("disconnect");
-        }
-      }
-    };
-    this.xhr.send("data=" + escape(message));
+  send: function (outbound) {
+    // TODO (mat): definitely need to move pack/unpack into the transport
+    var message = Chloe.Message.unpack(outbound);
+    message.sessionId = this.sessionId;
+    message.pack();
+    this.postRequest(message.packed);
   },
 
   // Internal functions
@@ -62,18 +54,64 @@ Chloe.Transport.XHR.prototype = {
     }
     return false;
   },
-  makeUrl: function (method) {
-    var paths = { GET: "/xhr/" + (+ new Date),
-                  POST: "/xhr" };
-    return this.url(paths[method]);
+
+  noop: function () {
   },
-  request: function (method, url) {
+
+  handleStateChange: function (req, callback) {
+    var received = callback || this.noop,
+        closed   = this.callbacks.onclose || this.noop;
+    req.onreadystatechange = function(){
+      var message, status;
+      if (req.readyState == 4){
+        req.onreadystatechange = this.noop;
+        try { status = req.status; } catch(e){}
+        if (status == 200){
+          if (req.responseText !== "") {
+            message = Chloe.Message.unpack(req.responseText);
+          }
+          received(message);
+        } else {
+          closed();
+        }
+      }
+    }
+  },
+  getRequest: function (callback) {
+    var req = this.makeXhr(),
+        message = new Chloe.Message({ sessionId: this.sessionId,
+                                      type: "poll" });
+    message.pack();
+    req.open('GET', this.url("/xhr/" + (+ new Date)) +
+                    "?data=" + escape(message.packed));
+    this.handleStateChange(req, callback);
+    req.send(null);
+  },
+  postRequest: function (data, callback) {
     var req = this.makeXhr();
-    req.open(method, url);
-    if (method == 'POST' && 'setRequestHeader' in req){
+    req.open('POST', this.url('/xhr'));
+    if ('setRequestHeader' in req) {
       req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
     }
-    return req;
+    this.handleStateChange(req, callback);
+    req.send("data=" + escape(data));
+  },
+  listenForMessages: function () {
+    var self = this,
+        onmessage = this.callbacks.onmessage || this.noop;
+        message = new Chloe.Message({ sessionId: this.sessionId,
+                                      type: "poll" });
+
+    this.getRequest(function (data) {
+      if (typeof(data) !== "undefined") {
+        var incomingMessage = new Chloe.Message(data);
+        incomingMessage.pack();
+        onmessage(message.packed);
+      }
+    });
+
+    setTimeout(function () {
+      self.listenForMessages();
+    }, 1000);
   }
 };
-
