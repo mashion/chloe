@@ -14,7 +14,20 @@ Chloe.Transport.Base = {
   url: function (path) {
     return this.protocol + "://" + this.host + ":" + this.port + "/chloe" + path;
   },
+  init: function (options) {
+    this.host = options.host;
+    this.port = options.port;
+    this.callbacks = {};
+    this.protocol = "http";
+  },
+  onmessage: function (callback) {
+    this.callbacks.onmessage = callback;
+  },
+  onclose: function (callback) {
+    this.callbacks.onclose = callback;
+  },
   mixin: function (child) {
+    // TODO (mat): try doing a prototype chain here instead
     for (var i in this) {
       child[i] = this[i];
     }

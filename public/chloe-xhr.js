@@ -1,16 +1,26 @@
 Chloe.Transport.XHR = function (options) {
   Chloe.Transport.Base.mixin(this);
-  this.host = options.host;
-  this.port = options.port;
-  this.protocol = "http";
+  this.init(options);
 };
 
 Chloe.Transport.XHR.prototype = {
   // Transport functions
   connect: function (callback) {
-    var self = this;
+    var message = new Chloe.Message({
+          type: 'connect'
+        });
+
+    this.callbacks.onconnect = callback;
     this.detectXhrTechnique();
-    this.xhr = this.request('GET');
+
+    message.pack();
+    message.send(this);
+  },
+
+  send: function (message) {
+    var self = this,
+        url = this.makeUrl('POST');
+    this.xhr = this.request('POST', url);
     this.xhr.onreadystatechange = function(){
       var status;
       if (self.xhr.readyState == 4){
@@ -19,18 +29,11 @@ Chloe.Transport.XHR.prototype = {
         if (status == 200){
           console.log(self.xhr.responseText);
         } else {
-          debugger;
           console.log("disconnect");
         }
       }
     };
-    this.xhr.send(null);
-  },
-  onclose: function (callback) {
-  },
-  onmessage: function (callback) {
-  },
-  send: function (message) {
+    this.xhr.send("data=" + escape(message));
   },
 
   // Internal functions
@@ -61,12 +64,12 @@ Chloe.Transport.XHR.prototype = {
   },
   makeUrl: function (method) {
     var paths = { GET: "/xhr/" + (+ new Date),
-                  POST: "/send" };
+                  POST: "/xhr" };
     return this.url(paths[method]);
   },
-  request: function (method) {
+  request: function (method, url) {
     var req = this.makeXhr();
-    req.open(method, this.makeUrl(method));
+    req.open(method, url);
     if (method == 'POST' && 'setRequestHeader' in req){
       req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
     }
