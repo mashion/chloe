@@ -2,14 +2,16 @@ Chloe = function (options) {
   options = options || {};
   options.host = options.host || 'localhost';
   options.port = options.port || 8901;
-  options.transport = options.transport || 'websocket';
 
-  var transports = {
-    websocket: Chloe.WebSocketTransport,
-    jsonp:     Chloe.JsonpTransport
+  var transports = [Chloe.WebSocketTransport, Chloe.JsonpTransport];
+
+  for (var i = 0, l = transports.length; i < l; i++) {
+    if (transports[i].isEnabled()) {
+      this.transport = new transports[i](options);
+      break;
+    }
   }
 
-  this.transport = new transports[options.transport](options);
   this.channelSubscriptions = {};
 };
 

@@ -34,3 +34,7 @@ Chloe.WebSocketTransport.prototype = {
     }
   }
 };
+
+Chloe.WebSocketTransport.isEnabled = function () {
+  return typeof(WebSocket) === "function";
+};

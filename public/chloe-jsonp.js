@@ -77,6 +77,10 @@ Chloe.JsonpTransport.prototype = {
 
 Chloe.JsonpTransport.connections = {};
 
+Chloe.JsonpTransport.isEnabled = function () {
+  return true;
+}
+
 Chloe.JsonpTransport.response = function (data) {
   var message    = new Chloe.Message(data),
       connection = Chloe.JsonpTransport.connections[message.id];
