@@ -28,6 +28,8 @@ start_link() ->
 create(Pid) ->
     gen_server:call(?SERVER, {create, Pid}).
 
+fetch_pid(SessionId) when is_list(SessionId) ->
+    fetch_pid(list_to_integer(SessionId));
 fetch_pid(SessionId) ->
     case ets:lookup(?TABLE_ID, SessionId) of
         [{SessionId, SessionPid}] -> {ok, SessionPid};

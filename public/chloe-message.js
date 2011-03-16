@@ -1,5 +1,12 @@
+// Chloe message types:
+// 'connect'
+// 'channel-subscribe'
+// 'message'
+
 Chloe.Message = function (options) {
   this.version = Chloe.Message.version;
+  this.sessionId = options.sessionId;
+  this.id      = options.id;
   this.type    = options.type;
   // TODO (trotter): I don't really like doing this, find a better way.
   this.channel = options.channel;
@@ -9,8 +16,10 @@ Chloe.Message = function (options) {
 
 Chloe.Message.version = 1;
 
-Chloe.Message.pack = function (data) {
-  var message = new Chloe.Message({data: data});
+Chloe.Message.pack = function (data, sessionId) {
+  var message = new Chloe.Message({data: data,
+                                   type: "message",
+                                   sessionId: sessionId});
   message.pack();
   return message;
 };
@@ -31,10 +40,12 @@ Chloe.Message.channelSubscribe = function (channel) {
 Chloe.Message.prototype = {
   pack: function () {
     this.packed = JSON.stringify({
-      type:    this.type,
-      channel: this.channel,
-      data:    this.data,
-      version: this.version
+      type:      this.type,
+      channel:   this.channel,
+      data:      this.data,
+      version:   this.version,
+      id:        this.id,
+      sessionId: this.sessionId
     });
   },
   unpack: function () {
@@ -42,9 +53,11 @@ Chloe.Message.prototype = {
     if (decoded.version != this.version) {
       throw new Error("Expected message version " + decoded.version + " to match " + this.version);
     }
-    this.data    = decoded.data;
-    this.channel = decoded.channel;
-    this.type    = decoded.type;
+    this.data      = decoded.data;
+    this.channel   = decoded.channel;
+    this.type      = decoded.type;
+    this.id        = decoded.id;
+    this.sessionId = decoded.sessionId;
   },
   send: function (transport) {
     transport.send(this.packed);

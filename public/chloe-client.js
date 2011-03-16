@@ -24,7 +24,11 @@ Chloe.Transport.Base = {
 Chloe.prototype = {
   // Public API
   connect: function (callback) {
-    this.transport.connect(callback);
+    self = this;
+    this.transport.connect(function (data) {
+      self.sessionId = data.sessionId;
+      callback();
+    });
   },
   onmessage: function (callback) {
     var self = this;
@@ -37,7 +41,7 @@ Chloe.prototype = {
     this.transport.onclose(callback);
   },
   send: function (data) {
-    var message = Chloe.Message.pack(data);
+    var message = Chloe.Message.pack(data, this.sessionId);
     message.send(this.transport);
   },
   subscribe: function (channel, callback) {

@@ -1,2 +1,2 @@
 -record(socketio_msg, {type, data}).
--record(message, {data, version, type, channel}).
+-record(message, {data, version, type, channel, id, session_id}).

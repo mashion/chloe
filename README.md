@@ -58,7 +58,7 @@ Installation
       chloe.send("hi mom");
 
 - Relish the awesome.
-- To stop Chloe, enter "q()." back in erlang
+- To stop Chloe, enter `q().` back in erlang
 - To stop the demo app, use Ctrl+C
 
 JS API
