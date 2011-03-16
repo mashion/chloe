@@ -2,6 +2,7 @@
 // 'connect'
 // 'channel-subscribe'
 // 'message'
+// 'poll'
 
 Chloe.Message = function (options) {
   this.version = Chloe.Message.version;
@@ -30,8 +31,9 @@ Chloe.Message.unpack = function (packed) {
   return message;
 }
 
-Chloe.Message.channelSubscribe = function (channel) {
+Chloe.Message.channelSubscribe = function (channel, client) {
   var message = new Chloe.Message({type: "channel-subscribe",
+                                   sessionId: client.sessionId,
                                    channel: channel});
   message.pack();
   return message;
@@ -60,6 +62,7 @@ Chloe.Message.prototype = {
     this.sessionId = decoded.sessionId;
   },
   send: function (transport) {
+    this.pack();
     transport.send(this.packed);
   }
 };

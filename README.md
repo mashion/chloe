@@ -111,13 +111,19 @@ application are:
   - **port**: The port on which chloe runs (default: 8901)
   - **log_dir**: Where the Chloe log files will go (default: `.`)
 
+Transport Types
+---------------
+
+Chloe currently supports Websockets and Jsonp as possible transports. However,
+it does not currently intelligently fallback from websockets to jsonp. In the
+near future, we'll intelligently fallback and support XHR as a transport.
+
 Caveats
 -------
 
-Chloe currently only works with browsers that support websockets. We've tested
-it with Safari and Chrome. We'll be rolling out support for more browsers in
-the near future.
+Our primary test browser is Chrome. If you're using any other browser, please
+let us know if you run into issues.
 
 This sucker is pretty alpha right now. There's a number of undocumented
-features, but everything that is documented, seems to work. As with all alpha,
+features, but everything that is documented seems to work. As with all alpha,
 open source software, ymmv. Pull requests gladly accepted!

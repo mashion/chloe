@@ -15,7 +15,13 @@ Chloe.JsonpTransport.prototype = {
           type: 'connect'
         });
 
-    this.callbacks.onconnect = callback;
+    this.callbacks.onconnect = function (data) {
+      // TODO: Storing sessionId both here and on client level.
+      //       Feels marginally wrong.
+      self.sessionId = data.sessionId;
+      self.listenForMessages();
+      callback(data);
+    };
 
     message.pack();
     message.send(this);
@@ -48,11 +54,24 @@ Chloe.JsonpTransport.prototype = {
   },
 
   url: function (data) {
-    return this.protocol + this.host + ":" + this.port + "/chloe/jsonp.js?data=" + escape(data);
+    return this.protocol + this.host + ":" + this.port + "/chloe/jsonp.js?data=" + escape(data) + "ts=" + (new Date()).getTime();
   },
 
   handleError: function () {
     console.log("oh noes, an error happened");
+  },
+
+  listenForMessages: function () {
+    var self = this,
+        message = new Chloe.Message({
+                                      id: this.id,
+                                      sessionId: this.sessionId,
+                                      type: "poll"
+                                    });
+    message.send(this);
+    window.setTimeout(function () {
+      self.listenForMessages();
+    }, 1000);
   }
 };
 
@@ -62,8 +81,14 @@ Chloe.JsonpTransport.response = function (data) {
   var message    = new Chloe.Message(data),
       connection = Chloe.JsonpTransport.connections[message.id];
 
+  // TODO: We are packing because chloe-client.js is going to try to unpack
+  // later. We need to remove this dependency and instead have the transports
+  // take care of unpacking.
+  message.pack();
   if (message.type == 'connect') {
     connection.callbacks.onconnect(message);
+  } else if (message.type == 'poll') {
+    connection.callbacks.onmessage(message.packed);
   } else {
     throw new Error("Unknown message type for JsonpTransport.");
   }
