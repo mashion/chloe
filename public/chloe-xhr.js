@@ -1,7 +1,14 @@
 Chloe.Transport.XHR = function (options) {
+  var self = this;
   Chloe.Transport.Base.mixin(this);
   this.init(options);
   this.detectXhrTechnique();
+  this.onclose = function (callback) {
+    self.callbacks.onclose = function () {
+      clearTimeout(self.poller);
+      callback();
+    };
+  };
 };
 
 Chloe.Transport.XHR.prototype = {
@@ -110,7 +117,7 @@ Chloe.Transport.XHR.prototype = {
       }
     });
 
-    setTimeout(function () {
+    this.poller = setTimeout(function () {
       self.listenForMessages();
     }, 1000);
   }
