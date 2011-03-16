@@ -9,11 +9,11 @@ chloe.onclose(function () {
 });
 
 chloe.connect(function () {
-  console.log('Holy shit, connected!');
+  console.log('Holy crap, connected!');
   chloe.send('Ohai Chloe!');
 
-  chloe.subscribe('pumpkin', function (message) {
-    console.log('Someone was eating pumpkins: ' + message);
-  });
+//  chloe.subscribe('pumpkin', function (message) {
+//    console.log('Someone was eating pumpkins: ' + message);
+//  });
 });
 

@@ -2,6 +2,7 @@
 // 'connect'
 // 'channel-subscribe'
 // 'message'
+// 'poll'
 
 Chloe.Message = function (options) {
   this.version = Chloe.Message.version;
@@ -60,6 +61,7 @@ Chloe.Message.prototype = {
     this.sessionId = decoded.sessionId;
   },
   send: function (transport) {
+    this.pack();
     transport.send(this.packed);
   }
 };
