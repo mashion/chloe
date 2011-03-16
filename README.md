@@ -114,15 +114,18 @@ application are:
 Transport Types
 ---------------
 
-Chloe currently supports Websockets and Jsonp as possible transports. However,
-it does not currently intelligently fallback from websockets to jsonp. In the
-near future, we'll intelligently fallback and support XHR as a transport.
+Chloe currently supports Websockets and Jsonp as possible transports. If your
+browser does not support WebSockets, we'll intelligently fallback to JSONP. XHR
+will soon be added as a transport as well.
 
 Caveats
 -------
 
 Our primary test browser is Chrome. If you're using any other browser, please
 let us know if you run into issues.
+
+JSONP support does not currently long poll. It's instead polling every second.
+Long polling will be added shortly for more up-to-date responses.
 
 This sucker is pretty alpha right now. There's a number of undocumented
 features, but everything that is documented seems to work. As with all alpha,
