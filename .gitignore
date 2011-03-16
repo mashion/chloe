@@ -3,6 +3,7 @@ ebin/*.beam
 ebin/*.app
 NOTES.markdown
 .eunit
+chloe.access
 *.log
 foobar.access
 chloe.config
