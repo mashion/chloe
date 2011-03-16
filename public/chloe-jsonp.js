@@ -69,7 +69,7 @@ Chloe.JsonpTransport.prototype = {
                                       type: "poll"
                                     });
     message.send(this);
-    window.setTimeout(function () {
+    setTimeout(function () {
       self.listenForMessages();
     }, 1000);
   }
