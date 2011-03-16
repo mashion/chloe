@@ -1,0 +1,5 @@
+[ Browser ]  -- 1. /index.html --> [ Your App ]
+[ Browser ]  -- 2. Send data over websockets --> [ Chloe ]
+[ Chloe ]    -- 3. Data from the browser --> [ Your App ]
+[ Your App ] -- 4. POST /send (data for browser) --> [ Chloe ]
+[ Chloe ]    -- 5. Data from your app --> [ Browser ]

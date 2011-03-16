@@ -1,5 +1,8 @@
 Chloe.Message = function (options) {
   this.version = Chloe.Message.version;
+  this.type    = options.type;
+  // TODO (trotter): I don't really like doing this, find a better way.
+  this.channel = options.channel;
   this.data    = options.data;
   this.packed  = options.packed;
 };
@@ -18,10 +21,19 @@ Chloe.Message.unpack = function (packed) {
   return message;
 }
 
+Chloe.Message.channelSubscribe = function (channel) {
+  var message = new Chloe.Message({type: "channel-subscribe",
+                                   channel: channel});
+  message.pack();
+  return message;
+}
+
 Chloe.Message.prototype = {
   pack: function () {
     this.packed = JSON.stringify({
-      data: this.data,
+      type:    this.type,
+      channel: this.channel,
+      data:    this.data,
       version: this.version
     });
   },
@@ -30,6 +42,11 @@ Chloe.Message.prototype = {
     if (decoded.version != this.version) {
       throw new Error("Expected message version " + decoded.version + " to match " + this.version);
     }
-    this.data = decoded.data;
+    this.data    = decoded.data;
+    this.channel = decoded.channel;
+    this.type    = decoded.type;
+  },
+  send: function (transport) {
+    transport.send(this.packed);
   }
 };

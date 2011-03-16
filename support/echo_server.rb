@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'net/http'
+require 'uri'
 
 set :public, File.dirname(__FILE__) + '/public'
 
@@ -10,9 +11,8 @@ end
 
 post '/updates' do
   data = request.body.read
-  Net::HTTP.start("localhost", 8888) do |http|
-    http.post('/send', "Handled by Sinatra: #{data}")
-  end
+  Net::HTTP.post_form(URI.parse("http://localhost:8901/send"),
+                      {"data" => "Handled by Sinatra: #{data}"})
   puts "I got some data: #{data}"
   "success"
 end

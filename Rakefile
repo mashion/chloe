@@ -2,6 +2,7 @@ desc "Install all necessary dependencies"
 task :bootstrap do
   sh("rebar get-deps") rescue :expected_to_fail
   sh("cd deps/yaws; rebar compile")
+  cp("chloe.config.example", "chloe.config") unless File.exist?("chloe.config")
 end
 
 desc "Start an erlang console"
@@ -11,7 +12,7 @@ end
 
 desc "Start an erlang console running chloe"
 task :server => :compile do
-  sh(erl "-s chloe")
+  sh(erl "-s chloe -config ./chloe")
 end
 
 desc "Compile Chloe"

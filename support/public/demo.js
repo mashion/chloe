@@ -1,4 +1,4 @@
-var chloe = new Chloe({host: 'localhost', port: 8888, transport: 'XHR'});
+var chloe = new Chloe({host: 'localhost', port: 8901, transport: 'XHR'});
 
 chloe.onmessage(function (message) {
   console.log('I got a message too: ' + message);
@@ -10,6 +10,10 @@ chloe.onclose(function () {
 
 chloe.connect(function () {
   console.log('Holy shit, connected!');
-  chloe.send('A');
+  chloe.send('Ohai Chloe!');
+
+  chloe.subscribe('pumpkin', function (message) {
+    console.log('Someone was eating pumpkins: ' + message);
+  });
 });
 

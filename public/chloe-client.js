@@ -1,8 +1,9 @@
 Chloe = function (options) {
   options = options || {};
   options.host = options.host || 'localhost';
-  options.port = options.port || 8888;
+  options.port = options.port || 8901;
   this.transport = this.makeTransport(options);
+  this.channelSubscriptions = {};
 };
 
 Chloe.Version = '0.0.1';
@@ -37,12 +38,22 @@ Chloe.prototype = {
   },
   send: function (data) {
     var message = Chloe.Message.pack(data);
-    this.transport.send(message.packed);
+    message.send(this.transport);
+  },
+  subscribe: function (channel, callback) {
+    var message = Chloe.Message.channelSubscribe(channel);
+    this.channelSubscriptions[channel] = callback;
+    message.send(this.transport);
   },
 
   // Internal functions
   handleMessage: function (message) {
-    this.onmessageCallback(message.data);
+    var callback = this.channelSubscriptions[message.channel];
+    if (callback) {
+      callback(message.data);
+    } else {
+      this.onmessageCallback(message.data);
+    }
   },
   makeTransport: function (options) {
     var Transport = Chloe.Transport[options.transport] || Chloe.Transport.WebSocket;

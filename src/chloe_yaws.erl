@@ -14,12 +14,13 @@ start_link() ->
 
 run() ->
     Id = "embedded",
-    GconfList = [{id, Id}],
+    GconfList = [{id, Id},
+                 {logdir, get_env(chloe, log_dir, ".")}],
     Docroot = "./public",
-    SconfList = [{port, 8888},
-                 {servername, "foobar"},
-                 {listen, {0,0,0,0}},
-                 {docroot, Docroot},
+    SconfList = [{port,       get_env(chloe, port, 8901)},
+                 {servername, "chloe"},
+                 {listen,     {0,0,0,0}},
+                 {docroot,    Docroot},
                  {appmods, [{"/chloe/websocket", chloe_yaws_updates},
                             {"/send", chloe_yaws_send}]}],
     {ok, SCList, GC, ChildSpecs} =
@@ -28,3 +29,11 @@ run() ->
     yaws_api:setconf(GC, SCList),
     {ok, self()}.
 
+%%--------------------------------------------------------------------
+%% Internal functions
+%%--------------------------------------------------------------------
+get_env(AppName, Key, Default) ->
+    case application:get_env(AppName, Key) of
+        undefined   -> Default;
+        {ok, Value} -> Value
+    end.

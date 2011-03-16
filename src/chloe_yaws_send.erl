@@ -5,17 +5,23 @@
 -export([out/1]).
 
 out(A) ->
-    send_to_all_subscribers(A#arg.clidata),
+    send_to_all_subscribers(A),
     {content, "text/plain", "success"}.
 
 %%--------------------------------------------------------------------
 %% internal functions
 %%--------------------------------------------------------------------
 
-send_to_all_subscribers(Data) ->
-    {ok, Subscribers} = chloe_channel_store:fetch_subscribers("/all"),
+send_to_all_subscribers(A) ->
+    Channel = case yaws_api:postvar(A, "channel") of
+                  {ok, C} -> C;
+                  _       -> "/all"
+              end,
+    {ok, Subscribers} = chloe_channel_store:fetch_subscribers(Channel),
+    {ok, Data}        = yaws_api:postvar(A, "data"),
     lists:foreach(
         fun(Pid) ->
-            chloe_session:send_to_browser(Pid, Data)
+            error_logger:info_msg("Sending ~p to ~p~n", [Data, Channel]),
+            chloe_session:send_to_browser(Pid, Channel, Data)
         end,
         Subscribers).
