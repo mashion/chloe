@@ -1,4 +1,4 @@
-var chloe = new Chloe({host: 'localhost', port: 8901, transport: 'jsonp'});
+var chloe = new Chloe({host: 'localhost', port: 8901, transport: 'websocket'});
 
 chloe.onmessage(function (message) {
   console.log('I got a message too: ' + message);
