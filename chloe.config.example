@@ -1,7 +1,8 @@
 [
   {chloe,
     [
-      {application_server_url, "http://localhost:4567/updates"},
+      {application_server, "http://localhost:4567"},
+      {application_path, "/updates"},
       {port, 8901},
       {log_dir, "."}
     ]}

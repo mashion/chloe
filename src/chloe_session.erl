@@ -82,7 +82,9 @@ code_change(_OldVsn, State, _Extra) ->
 %%--------------------------------------------------------------------
 
 send_data_to_server(Data) ->
-    {ok, Url} = application:get_env(chloe, application_server_url),
+    {ok, Origin} = application:get_env(chloe, application_server),
+    {ok, Path} = application:get_env(chloe, application_path),
+    Url = string:concat(Origin, Path),
     httpc:request(post, {Url,
                          [],
                          "text/plain",
