@@ -109,11 +109,9 @@ Chloe.Transport.XHR.prototype = {
         message = new Chloe.Message({ sessionId: this.sessionId,
                                       type: "poll" });
 
-    this.getRequest(function (data) {
-      if (typeof(data) !== "undefined") {
-        var incomingMessage = new Chloe.Message(data);
-        incomingMessage.pack();
-        onmessage(message.packed);
+    this.getRequest(function (incoming) {
+      if (typeof(incoming) !== "undefined") {
+        onmessage(incoming.packed);
       }
     });
 

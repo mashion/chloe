@@ -53,7 +53,7 @@ handle_poll(Message) ->
 create_session() ->
     %% TODO: We should really tell chloe session manager what it's dealing
     %%       with, so that it doesn't try to send data down the pipe.
-    {ok, SessionId} = chloe_session_manager:create(self()),
+    {ok, SessionId} = chloe_session_manager:create(undefined),
     SessionId.
 
 session_pid(SessionId) ->
