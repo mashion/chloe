@@ -35,12 +35,18 @@ Chloe.JsonpTransport.prototype = {
     this.callbacks.onclose = callback;
   },
 
-  send: function (data) {
-    var self = this;
-    script = document.createElement('script');
+  send: function (data, options) {
+    var self = this,
+        script = document.createElement('script');
+
+    options = options || {};
+
     script.src = this.url(data);
     script.type = 'text/javascript';
     script.onerror = function () {
+      if (options.onerror) {
+        options.onerror();
+      }
       // TODO: Find out what, if any, arguments this takes
       self.handleError();
     }
@@ -68,10 +74,7 @@ Chloe.JsonpTransport.prototype = {
                                       sessionId: this.sessionId,
                                       type: "poll"
                                     });
-    message.send(this);
-    window.setTimeout(function () {
-      self.listenForMessages();
-    }, 1000);
+    message.send(this, {onerror: function () { self.listenForMessages(); }});
   }
 };
 
@@ -93,6 +96,7 @@ Chloe.JsonpTransport.response = function (data) {
     connection.callbacks.onconnect(message);
   } else if (message.type == 'poll') {
     connection.callbacks.onmessage(message.packed);
+    connection.listenForMessages();
   } else {
     throw new Error("Unknown message type for JsonpTransport.");
   }

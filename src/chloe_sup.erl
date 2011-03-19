@@ -29,8 +29,10 @@ init([]) ->
     ChannelStore = ?WORKER(chloe_channel_store),
     SessionManager = ?WORKER(chloe_session_manager),
     WebSocketSup = ?SUPERVISOR(chloe_websocket_sup, chloe_websocket),
+    JsonpStreamSup = ?SUPERVISOR(chloe_jsonp_stream_sup, chloe_jsonp_stream),
     SessionSup = ?SUPERVISOR(chloe_session_sup, chloe_session),
-    Children = [Yaws, ChannelStore, SessionManager, WebSocketSup, SessionSup],
+    Children = [Yaws, ChannelStore, SessionManager, WebSocketSup,
+                JsonpStreamSup, SessionSup],
     RestartStrategy = {one_for_one, 5, 10},
     {ok, {RestartStrategy, Children}}.
 

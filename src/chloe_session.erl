@@ -9,7 +9,8 @@
          send_to_server/2,
          subscribe/2,
          send_to_browser/3,
-         retrieve_messages/1
+         retrieve_messages/1,
+         attach_transport_pid/2
         ]).
 
 %% gen_server callbacks
@@ -37,6 +38,9 @@ send_to_browser(Pid, Channel, Data) ->
 retrieve_messages(Pid) ->
     gen_server:call(Pid, retrieve_messages).
 
+attach_transport_pid(Pid, TransportPid) ->
+    gen_server:cast(Pid, {attach_transport_pid, TransportPid}).
+
 %%--------------------------------------------------------------------
 %% gen_server callbacks
 %%--------------------------------------------------------------------
@@ -62,11 +66,22 @@ handle_cast({subscribe, Channel}, State) ->
     chloe_channel_store:subscribe(Channel, self()),
     {noreply, State};
 handle_cast({send_to_browser, [Channel, Data]}, State) ->
-    NewState = case State#state.transport_pid of
-                    undefined -> store_message_for_later(Channel, Data, State);
-                    _         -> send_message_to_browser(Channel, Data, State)
+    %% TODO (trotter): Handle case where we have a pid but
+    %%                 it's no longer active.
+    error_logger:info_msg("Sending to browser, pid is ~p", [State#state.transport_pid]),
+    NewState = case is_transport_available(State#state.transport_pid) of
+                    true  -> send_message_to_browser(Channel, Data, State);
+                    _     -> store_message_for_later(Channel, Data, State)
                 end,
-    {noreply, NewState}.
+    {noreply, NewState};
+handle_cast({attach_transport_pid, TransportPid}, State) ->
+    Messages = State#state.messages,
+    case Messages of
+        [] -> NewState = State;
+        _  -> NewState = State#state{messages = []},
+              gen_server:cast(TransportPid, {send, [Messages]})
+    end,
+    {noreply, NewState#state{transport_pid = TransportPid}}.
 
 handle_info(_Info, State) ->
     {noreply, State}.
@@ -91,8 +106,15 @@ send_data_to_server(Data) ->
 
 store_message_for_later(Channel, Data, State) ->
     Messages = [#message{channel=Channel, data=Data} | State#state.messages],
-    State#state{messages=Messages}.
+    State#state{messages=Messages, transport_pid=undefined}.
 
 send_message_to_browser(Channel, Data, State) ->
-    gen_server:cast(State#state.transport_pid, {send, [Channel, Data]}),
+    Messages = [#message{channel=Channel, data=Data}],
+    gen_server:cast(State#state.transport_pid, {send, [Messages]}),
     State.
+
+is_transport_available(TransportPid) ->
+    case TransportPid of
+        undefined -> false;
+        _         -> is_process_alive(TransportPid)
+    end.
