@@ -48,7 +48,7 @@ handle_cast({send, [Messages]}, State) ->
     yaws_api:stream_process_deliver_final_chunk(State#state.socket, Packed),
     yaws_api:stream_process_end(State#state.socket, State#state.yaws_pid),
     error_logger:info_msg("Should be sending data now!!"),
-    {stop, sent_messages, State};
+    {stop, normal, State};
 handle_cast(_Request, State) ->
     {noreply, State}.
 
@@ -60,7 +60,7 @@ handle_info({ok, YawsPid}, State) ->
     {noreply, State#state{yaws_pid = YawsPid}};
 handle_info({discard, YawsPid}, State) ->
     yaws_api:stream_process_end(State#state.socket, YawsPid),
-    {stop, yaws_discard, State};
+    {stop, normal, State};
 handle_info(_Info, State) ->
     {noreply, State}.
 
