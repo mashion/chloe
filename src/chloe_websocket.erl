@@ -10,7 +10,7 @@
 %% API
 -export([
          start_link/0,
-         send/3
+         send/2
         ]).
 
 %% gen_server callbacks
@@ -27,8 +27,8 @@
 start_link() ->
     gen_server:start_link(?MODULE, [], []).
 
-send(Pid, Channel, Data) ->
-    gen_server:cast(Pid, {send, [Channel, Data]}).
+send(Pid, [Messages]) ->
+    gen_server:cast(Pid, {send, [Messages]}).
 
 %%--------------------------------------------------------------------
 %% gen_server callbacks
@@ -40,10 +40,12 @@ init([]) ->
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
-handle_cast({send, [Channel, Data]}, State) ->
-    Packed = chloe_message:pack(#message{data=Data, channel=Channel}),
-    error_logger:info_msg("Sending back: ~p", [Packed]),
-    yaws_api:websocket_send(State#state.websocket, Packed),
+handle_cast({send, [Messages]}, State) ->
+    lists:foreach(fun (M) ->
+            Packed = chloe_message:pack(M),
+            error_logger:info_msg("Sending back: ~p", [Packed]),
+            yaws_api:websocket_send(State#state.websocket, Packed)
+        end, Messages),
     {noreply, State}.
 
 %% This is where our websocket comms will come in
