@@ -66,7 +66,7 @@ JS API
 
 Instantiate a Chloe object:
 
-    var chloe = new Chloe({host: 'localhost', port: 8888});
+    var chloe = new Chloe({host: 'localhost', port: 8901});
 
 Define a function for handling incoming messages:
 
@@ -94,11 +94,11 @@ Server Side API
 
 Sending a message to Chloe, which will then be sent to all connected browsers:
 
-    curl -d "data=This is the message data" http://localhost:8888/send
+    curl -d "data=This is the message data" http://localhost:8901/send
 
 Sending a message to a specific channel in chloe:
 
-    curl -d "channel=pumpkins&data=Trotter" http://localhost:8888/send
+    curl -d "channel=pumpkin&data=Trotter" http://localhost:8901/send
 
 Configuring Chloe
 -----------------
