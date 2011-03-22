@@ -1,6 +1,6 @@
 -module(chloe_yaws_websocket).
 
--include("../deps/yaws/include/yaws_api.hrl").
+-include("../../../deps/yaws/include/yaws_api.hrl").
 
 -export([out/1]).
 

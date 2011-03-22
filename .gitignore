@@ -1,8 +1,8 @@
 deps
-ebin/*.beam
-ebin/*.app
+apps/chloe/ebin
 NOTES.markdown
 .eunit
 *.log
 foobar.access
 chloe.config
+rel/chloe*

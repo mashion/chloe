@@ -2,7 +2,7 @@
  [
   {description, "A websocket server"},
   {vsn, "0.0.1"},
-  {registered, [chloe_sup]},
+  {registered, [chloe_app]},
   {applications, [
                   kernel,
                   stdlib,

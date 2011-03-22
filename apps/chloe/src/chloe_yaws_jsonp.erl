@@ -1,6 +1,6 @@
 -module(chloe_yaws_jsonp).
 
--include("../deps/yaws/include/yaws_api.hrl").
+-include("../../../deps/yaws/include/yaws_api.hrl").
 -include_lib("./chloe.hrl").
 
 -export([out/1]).
