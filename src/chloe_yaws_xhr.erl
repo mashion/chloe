@@ -39,16 +39,7 @@ handle_channel_subscribe(Message) ->
 handle_poll(Message) ->
     Messages = chloe_session:retrieve_messages(session_pid(Message#message.session_id)),
     error_logger:info_msg("We got messages ~p~n", [Messages]),
-    %% TODO (mat): this won't jive for XHR. Need respond with array of messages.
-    PackedMessages = lists:map(fun (M) ->
-            Packed = chloe_message:pack(#message{id=Message#message.id,
-                                                 type=Message#message.type,
-                                                 data=M#message.data,
-                                                 channel=M#message.channel}),
-            Packed
-        end, Messages),
-    Packed = string:join(PackedMessages, ""),
-    cross_origin_response(Packed).
+    cross_origin_response(chloe_message:pack(Messages)).
 
 create_session() ->
     %% TODO: We should really tell chloe session manager what it's dealing

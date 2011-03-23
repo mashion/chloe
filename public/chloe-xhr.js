@@ -75,9 +75,16 @@ Chloe.Transport.XHR.prototype = {
         try { status = req.status; } catch(e){}
         if (status == 200){
           if (req.responseText !== "") {
-            message = Chloe.Message.unpack(req.responseText);
+            var data = JSON.parse(req.responseText);
+            if (data.messages) {
+              var messages = data.messages;
+              for (var i in messages) {
+                received(new Chloe.Message(messages[i]));
+              }
+            } else {
+              received(new Chloe.Message(data));
+            }
           }
-          received(message);
         } else {
           closed();
         }
@@ -111,6 +118,7 @@ Chloe.Transport.XHR.prototype = {
 
     this.getRequest(function (incoming) {
       if (typeof(incoming) !== "undefined") {
+        incoming.pack();
         onmessage(incoming.packed);
       }
     });

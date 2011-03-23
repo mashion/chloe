@@ -25,13 +25,20 @@ unpack(Data) ->
              id=proplists:get_value(id, PropList),
              session_id=proplists:get_value(sessionId, PropList)}.
 
+to_struct(Message) ->
+    {struct, [{data,      Message#message.data},
+              {version,   ?VERSION},
+              {type,      Message#message.type},
+              {channel,   Message#message.channel},
+              {id,        Message#message.id},
+              {sessionId, Message#message.session_id}]}.
+
+pack(Messages) when is_list(Messages) ->
+  json:encode({struct, [{messages, {array, lists:map(fun (M) ->
+                           to_struct(M)
+                       end, Messages)}}]});
 pack(Message) ->
-    json:encode({struct, [{data,      Message#message.data},
-                          {version,   ?VERSION},
-                          {type,      Message#message.type},
-                          {channel,   Message#message.channel},
-                          {id,        Message#message.id},
-                          {sessionId, Message#message.session_id}]}).
+  json:encode(to_struct(Message)).
 
 %%--------------------------------------------------------------------
 %% Internal functions
