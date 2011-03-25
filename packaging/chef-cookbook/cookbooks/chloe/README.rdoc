@@ -1,0 +1,12 @@
+= DESCRIPTION:
+
+Installs / Configures chloe, a realtime webserver that doesn't suck.
+
+= REQUIREMENTS:
+
+Known to work on Debian / Ubuntu. May work on others, but is untested.
+
+= ATTRIBUTES:
+
+= USAGE:
+
