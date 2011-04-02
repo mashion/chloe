@@ -64,7 +64,7 @@ Chloe.JsonpTransport.prototype = {
   },
 
   handleError: function () {
-    console.log("oh noes, an error happened");
+    // Need to figure out what to do here.
   },
 
   listenForMessages: function () {

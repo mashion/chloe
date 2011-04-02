@@ -1,19 +1,19 @@
 var chloe = new Chloe({host: "<%= server_name %>", port: 8901});
 
 chloe.onmessage(function (message) {
-  console.log('I got a message too: ' + message);
+  alert('I got a message too: ' + message);
 });
 
 chloe.onclose(function () {
-  console.log("And... we're closed.");
+  alert("And... we're closed.");
 });
 
 chloe.connect(function () {
-  console.log('Holy crap, connected!');
+  alert('Holy crap, connected!');
   chloe.send('Ohai Chloe!');
 
   chloe.subscribe('pumpkin', function (message) {
-    console.log('Someone was eating pumpkins: ' + message);
+    alert('Someone was eating pumpkins: ' + message);
   });
 });
 
