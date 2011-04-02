@@ -31,7 +31,7 @@ Installation
 Mac Binary
 ==========
 
-    curl -O https://github.com/downloads/mashion/chloe/chloe-0.0.1-osx.tgz
+    curl -LO https://github.com/downloads/mashion/chloe/chloe-0.0.1-osx.tgz
     tar xzvf chloe-0.0.1-osx.tgz
     cd chloe-0.0.1
     ./bin/chloe start
