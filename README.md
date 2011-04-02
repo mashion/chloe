@@ -31,7 +31,7 @@ Installation
 Mac Binary
 ==========
 
-    wget https://github.com/downloads/mashion/chloe/chloe-0.0.1-osx.tgz
+    curl -O https://github.com/downloads/mashion/chloe/chloe-0.0.1-osx.tgz
     tar xzvf chloe-0.0.1-osx.tgz
     cd chloe-0.0.1
     ./bin/chloe start
@@ -39,7 +39,7 @@ Mac Binary
 Ubuntu Binary
 =============
 
-    https://github.com/downloads/mashion/chloe/chloe-0.0.1-ubuntu32.tgz
+    wget https://github.com/downloads/mashion/chloe/chloe-0.0.1-ubuntu32.tgz
     tar xzvf chloe-0.0.1-ubuntu32.tgz
     cd chloe-0.0.1
     ./bin/chloe start
