@@ -28,6 +28,25 @@ relay it back to the connected browser [5].
 Installation
 ------------
 
+Mac Binary
+==========
+
+    wget https://github.com/downloads/mashion/chloe/chloe-0.0.1-osx.tgz
+    tar xzvf chloe-0.0.1-osx.tgz
+    cd chloe-0.0.1
+    ./bin/chloe start
+
+Ubuntu Binary
+=============
+
+    https://github.com/downloads/mashion/chloe/chloe-0.0.1-ubuntu32.tgz
+    tar xzvf chloe-0.0.1-ubuntu32.tgz
+    cd chloe-0.0.1
+    ./bin/chloe start
+
+From Source
+===========
+
 - Get you some erlang, on a mac:
 
       brew install erlang
@@ -103,9 +122,8 @@ Sending a message to a specific channel in chloe:
 Configuring Chloe
 -----------------
 
-Chloe has a single configuration file, `chloe.config`. See
-`chloe.config.example` for an example. Allowed options for the Chloe
-application are:
+Chloe has a single configuration file, `chloe-0.0.1/etc/app.config`. Allowed
+options for the Chloe application are:
 
   - **application_server_url**: The url for the application server, ex: http://localhost:4567/updates
   - **port**: The port on which chloe runs (default: 8901)
