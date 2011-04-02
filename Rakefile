@@ -30,6 +30,41 @@ task :demo do
   Sinatra::Application.run!
 end
 
+begin
+  require('jslintrb-v8')
+  task :jslint do
+    linter = JSLint.new(
+      :white =>    false,
+      :undef =>    true,
+      :nomen =>    false,
+      :eqeqeq =>   true,
+      :plusplus => true,
+      :bitwise =>  true,
+      :regexp =>   false,
+      :strict =>   false,
+      :newcap =>   true,
+      :immed =>    true,
+      :indent =>   2,
+      :predef =>   "Chloe"
+    )
+    errors = []
+    path = File.join('public', '**', '*.js')
+    Dir[path].each do |f|
+      puts "checking #{f}"
+      e = linter.check(File.read(f))
+      errors << "\nIn [#{f}]:\n#{e}\n" if e
+    end
+    if errors.empty?
+      puts "JSLinty-fresh!"
+    else
+      $stderr.write(errors.join("\n")+"\n");
+      raise "JSLint Errors Found"
+    end
+  end
+rescue LoadError
+  puts "jslintrb_v8 not installed. Not adding jslint task"
+end
+
 def erl(extra="")
   "erl -pa apps/chloe/ebin -pa deps/yaws/ebin #{extra}"
 end

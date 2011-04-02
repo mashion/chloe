@@ -49,7 +49,7 @@ Chloe.JsonpTransport.prototype = {
       }
       // TODO: Find out what, if any, arguments this takes
       self.handleError();
-    }
+    };
     document.body.appendChild(script);
   },
 
@@ -92,9 +92,9 @@ Chloe.JsonpTransport.response = function (data) {
   // later. We need to remove this dependency and instead have the transports
   // take care of unpacking.
   message.pack();
-  if (message.type == 'connect') {
+  if (message.type === 'connect') {
     connection.callbacks.onconnect(message);
-  } else if (message.type == 'poll') {
+  } else if (message.type === 'poll') {
     connection.callbacks.onmessage(message.packed);
     connection.listenForMessages();
   } else {

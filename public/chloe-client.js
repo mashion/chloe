@@ -18,7 +18,7 @@ Chloe = function (options) {
 Chloe.prototype = {
   // Public API
   connect: function (callback) {
-    self = this;
+    var self = this;
     this.transport.connect(function (data) {
       self.sessionId = data.sessionId;
       callback();

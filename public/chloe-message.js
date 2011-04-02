@@ -29,7 +29,7 @@ Chloe.Message.unpack = function (packed) {
   var message = new Chloe.Message({packed: packed});
   message.unpack();
   return message;
-}
+};
 
 Chloe.Message.channelSubscribe = function (channel, client) {
   var message = new Chloe.Message({type: "channel-subscribe",
@@ -37,7 +37,7 @@ Chloe.Message.channelSubscribe = function (channel, client) {
                                    channel: channel});
   message.pack();
   return message;
-}
+};
 
 Chloe.Message.prototype = {
   pack: function () {
@@ -52,7 +52,7 @@ Chloe.Message.prototype = {
   },
   unpack: function () {
     var decoded = JSON.parse(this.packed);
-    if (decoded.version != this.version) {
+    if (decoded.version !== this.version) {
       throw new Error("Expected message version " + decoded.version + " to match " + this.version);
     }
     this.data      = decoded.data;
