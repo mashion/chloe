@@ -116,8 +116,8 @@ Chloe.XhrTransport.prototype = {
       }
     });
 
-    this.poller = setTimeout(function () {
-      self.listenForMessages();
-    }, 1000);
+    //this.poller = setTimeout(function () {
+    //  self.listenForMessages();
+    //}, 1000);
   }
 };

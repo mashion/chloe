@@ -5,6 +5,8 @@
 
 -export([out/1]).
 
+-define(MIME_TYPE, "application/json").
+
 %%--------------------------------------------------------------------
 %% API
 %%--------------------------------------------------------------------
@@ -26,10 +28,13 @@ out(A) ->
 cross_origin_response() ->
     cross_origin_response("").
 
-cross_origin_response(Packed) ->
+cross_origin_response(Response) when is_tuple(Response) ->
     {ok, Origin} = application:get_env(chloe, application_server),
     [{header, ["Access-Control-Allow-Origin: ", Origin]},
-     {content, "application/json", Packed}].
+     Response];
+
+cross_origin_response(Packed) ->
+    cross_origin_response({content, ?MIME_TYPE, Packed}).
 
 handle_connect(Message) ->
     SessionId = create_session(),
@@ -49,9 +54,10 @@ handle_channel_subscribe(Message) ->
     cross_origin_response().
 
 handle_poll(A, Message) ->
-    Messages = chloe_session:retrieve_messages(session_pid(Message#message.session_id)),
-    error_logger:info_msg("We got messages ~p~n", [Messages]),
-    cross_origin_response(chloe_message:pack(Messages)).
+    error_logger:info_msg("Starting poll server"),
+    {ok, StreamPid} = chloe_xhr_stream_sup:start_child(A#arg.clisock, Message),
+    error_logger:info_msg("Poll server started"),
+    cross_origin_response({streamcontent_from_pid, ?MIME_TYPE, StreamPid}).
 
 session_pid(SessionId) ->
     {ok, SessionPid} = chloe_session_manager:fetch_pid(SessionId),
