@@ -3,9 +3,7 @@ Chloe = function (options) {
   options.host = options.host || 'localhost';
   options.port = options.port || 8901;
 
-  var transports = [
-                    Chloe.XhrTransport,
-                    Chloe.JsonpTransport];
+  var transports = [Chloe.XhrTransport];
 
   for (var i = 0, l = transports.length; i < l; i++) {
     if (transports[i].isEnabled()) {
@@ -15,6 +13,11 @@ Chloe = function (options) {
   }
 
   this.channelSubscriptions = {};
+};
+
+Chloe.extend = function (source, obj) {
+  for (var prop in source) obj[prop] = source[prop];
+  return obj;
 };
 
 Chloe.prototype = {
