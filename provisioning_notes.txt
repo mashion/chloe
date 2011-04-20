@@ -1,0 +1,38 @@
+Commands to get chloe package built:
+$ instance_id=$(ec2-run-instances ami-a6f504cf -k trotter | grep INSTANCE | cut -f2)
+$ host=$(ec2-describe-instances | grep $instance_id | cut -f4)
+$ ssh ubuntu@$host
+> sudo apt-get update
+> sudo apt-get install -y build-essential libncurses5-dev openssl libssl-dev
+> sudo apt-get install -y erlang  # Installs R13B03, should probably install erlang / find better package
+> sudo apt-get install -y git-core
+> sudo apt-get install -y rake
+> sudo apt-get install -y gcc
+> sudo apt-get install -y libpam0g-dev
+> wget http://www.erlang.org/download/otp_src_R14B02.tar.gz
+> tar zxvf otp_src_R14B02.tar.gz
+> cd otp_src_R14B02
+> ./configure && make && sudo make install
+> cd -
+> git clone https://github.com/basho/rebar.git
+> cd rebar
+> ./bootstrap
+> sudo mv rebar /usr/local/bin
+> cd -
+> git clone https://github.com/mashion/chloe.git
+> cd chloe
+> rake bootstrap
+> rake compile
+> rebar generate
+> cd rel
+> mv chloe chloe-0.0.1
+> tar czvf chloe-0.0.1-ubuntu.tgz chloe-0.0.1
+
+Commands to run chloe package on ubuntu on ec2:
+$ instance_id=$(ec2-run-instances ami-a6f504cf -k trotter | grep INSTANCE | cut -f2)
+$ host=$(ec2-describe-instances | grep $instance_id | cut -f4)
+$ ssh ubuntu@$host
+$ wget --no-check-certificate https://github.com/downloads/mashion/chloe/chloe-0.0.1-ubuntu32.tgz
+$ tar xzvf chloe-0.0.1-ubuntu32.tgz
+$ cd chloe-0.0.1 && ./bin/chloe start
+
