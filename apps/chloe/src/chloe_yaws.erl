@@ -22,8 +22,9 @@ run() ->
                  {listen,     {0,0,0,0}},
                  {docroot,    Docroot},
                  {appmods, [{"/chloe/websocket", chloe_yaws_websocket},
-                            {"/chloe/jsonp.js", chloe_yaws_jsonp},
-                            {"/send", chloe_yaws_send}]}],
+                            {"/chloe/xhr",       chloe_yaws_xhr},
+                            {"/chloe/jsonp.js",  chloe_yaws_jsonp},
+                            {"/send",            chloe_yaws_send}]}],
     {ok, SCList, GC, ChildSpecs} =
         yaws_api:embedded_start_conf(Docroot, SconfList, GconfList, Id),
     [supervisor:start_child(?SUPERVISOR, Ch) || Ch <- ChildSpecs],
