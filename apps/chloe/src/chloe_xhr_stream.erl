@@ -38,7 +38,7 @@ handle_call(_Request, _From, State) ->
 
 handle_cast({send, [Messages]}, State) ->
     Packed = chloe_message:pack(Messages),
-    yaws_api:stream_process_deliver_final_chunk(State#state.socket, "{}"),
+    yaws_api:stream_process_deliver_final_chunk(State#state.socket, Packed),
     yaws_api:stream_process_end(State#state.socket, State#state.yaws_pid),
     {stop, normal, State};
 handle_cast(_Request, State) ->
