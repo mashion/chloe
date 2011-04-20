@@ -68,7 +68,6 @@ handle_cast({subscribe, Channel}, State) ->
 handle_cast({send_to_browser, [Channel, Data]}, State) ->
     %% TODO (trotter): Handle case where we have a pid but
     %%                 it's no longer active.
-    error_logger:info_msg("Sending to browser, pid is ~p", [State#state.transport_pid]),
     NewState = case is_transport_available(State#state.transport_pid) of
                     true  -> send_message_to_browser(Channel, Data, State);
                     _     -> store_message_for_later(Channel, Data, State)
