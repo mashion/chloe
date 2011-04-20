@@ -3,7 +3,9 @@ Chloe = function (options) {
   options.host = options.host || 'localhost';
   options.port = options.port || 8901;
 
-  var transports = [Chloe.XhrTransport];
+  var transports = [Chloe.WebSocketTransport,
+                    Chloe.XhrTransport,
+                    Chloe.JsonpTransport ];
 
   for (var i = 0, l = transports.length; i < l; i++) {
     if (transports[i].isEnabled()) {
