@@ -114,10 +114,10 @@ Chloe.XhrTransport.prototype = {
         incoming.pack();
         onmessage(incoming.packed);
       }
+      // XXX (trotter): The following works for fetching messages,
+      //                but it causes a weird '<System>' error message
+      //                to show up in firebug.
+      self.listenForMessages();
     });
-
-    //this.poller = setTimeout(function () {
-    //  self.listenForMessages();
-    //}, 1000);
   }
 };
