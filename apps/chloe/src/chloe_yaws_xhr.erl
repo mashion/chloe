@@ -28,6 +28,8 @@ out(A) ->
 cross_origin_response() ->
     cross_origin_response("").
 
+%% TODO (trotter): May need to append the port here, I noticed
+%%                 that Chrome was upset with this header.
 cross_origin_response(Response) when is_tuple(Response) ->
     {ok, Origin} = application:get_env(chloe, application_server),
     [{header, ["Access-Control-Allow-Origin: ", Origin]},
@@ -54,9 +56,7 @@ handle_channel_subscribe(Message) ->
     cross_origin_response().
 
 handle_poll(A, Message) ->
-    error_logger:info_msg("Starting poll server"),
     {ok, StreamPid} = chloe_xhr_stream_sup:start_child(A#arg.clisock, Message),
-    error_logger:info_msg("Poll server started"),
     cross_origin_response({streamcontent_from_pid, ?MIME_TYPE, StreamPid}).
 
 session_pid(SessionId) ->

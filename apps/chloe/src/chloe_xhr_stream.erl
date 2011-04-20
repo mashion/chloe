@@ -30,7 +30,6 @@ send(Pid, Channel, Data) ->
 %%--------------------------------------------------------------------
 
 init([Socket, Message]) ->
-    error_logger:info_msg("Ran stream init"),
     {ok, #state{socket = Socket, message = Message}}.
 
 handle_call(_Request, _From, State) ->
@@ -45,7 +44,6 @@ handle_cast(_Request, State) ->
     {noreply, State}.
 
 handle_info({ok, YawsPid}, State) ->
-    error_logger:info_msg("In handle info"),
     Message = State#state.message,
     {ok, SessionPid} = chloe_session_manager:fetch_pid(Message#message.session_id),
     %% Now that Yaws is ready, we attach ourselves to our session.
