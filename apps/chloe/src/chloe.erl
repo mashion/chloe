@@ -11,9 +11,20 @@
 %%--------------------------------------------------------------------
 
 start() ->
-    ok = application:start(inets),
+    ensure_started(inets),
     application:start(chloe).
 
 stop() ->
-    ok = application:stop(chloe),
-    application:stop(inets).
+    application:stop(chloe).
+
+%%--------------------------------------------------------------------
+%% Internal functions
+%%--------------------------------------------------------------------
+
+ensure_started(App) ->
+    case application:start(App) of
+        ok ->
+            ok;
+        {error, {already_started, App}} ->
+            ok
+    end.
