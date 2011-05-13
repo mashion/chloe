@@ -34,5 +34,5 @@ do
   sleep 1
 done
 
-cd /opt/chloe-0.0.1/bin && ./chloe start
+cd /opt/chloe-0.0.2/bin && ./chloe start
 /usr/bin/ruby /opt/chloe_chat_example/chat_server.rb > /var/chat_server.log 2>&1 &

@@ -1,9 +1,10 @@
+require 'fileutils'
+
 desc "Install all necessary dependencies"
 task :bootstrap do
   sh("bundle install")
   sh("rebar get-deps") rescue :expected_to_fail
   sh("cd deps/yaws; rebar compile")
-  sh("rebar generate") unless File.exist?("rel/chloe")
 end
 
 desc "Start an erlang console"
@@ -24,6 +25,17 @@ end
 desc "Run unit tests for chloe"
 task :test do
   sh("rebar app=chloe eunit")
+end
+
+desc "Generate a release on this box"
+task :platform_release do
+  # TODO (factor out version to not be hard coded)
+  version = "0.0.2"
+  FileUtils.rm_rf("./rel/chloe")
+  FileUtils.rm_rf("./rel/chloe-#{version}")
+  sh "rebar generate"
+  sh "cp -r ./rel/chloe ./rel/chloe-#{version}"
+  sh "cd ./rel && tar czf chloe-#{version}.tgz chloe-#{version}"
 end
 
 desc "Run demo echo server"

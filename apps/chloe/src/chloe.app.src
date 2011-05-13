@@ -1,7 +1,7 @@
 {application, chloe,
  [
   {description, "A websocket server"},
-  {vsn, "0.0.1"},
+  {vsn, "0.0.2"},
   {registered, [chloe_app]},
   {applications, [
                   kernel,

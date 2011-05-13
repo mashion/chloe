@@ -1,6 +1,6 @@
 
 ## Name of the node
--name chloe@127.0.0.1
+-name chloe@127.0.0.2
 
 ## Cookie for distributed erlang
 -setcookie chloe
