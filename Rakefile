@@ -19,7 +19,7 @@ task :server => :compile do
 end
 
 desc "Compile Chloe"
-task :compile => :test do
+task :compile => [:build_js, :test] do
   sh("rebar compile")
 end
 
