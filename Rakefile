@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'sprockets'
 
 desc "Install all necessary dependencies"
 task :bootstrap do
@@ -42,6 +43,16 @@ desc "Run demo echo server"
 task :demo do
   require './support/echo_server'
   Sinatra::Application.run!
+end
+
+desc "Build chloe.js"
+task :build_js do
+  secretary = Sprockets::Secretary.new(
+    :asset_root   => "public",
+    :source_files => ["javascripts/chloe.js"]
+  )
+
+  secretary.concatenation.save_to("public/chloe.js")
 end
 
 begin

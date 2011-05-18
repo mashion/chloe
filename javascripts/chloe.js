@@ -1,0 +1,7 @@
+//= require "json2.js"
+//= require "chloe-client.js"
+//= require "chloe-websocket.js"
+//= require "chloe-xhr.js"
+//= require "chloe-xdomain.js"
+//= require "chloe-jsonp.js"
+//= require "chloe-message.js"

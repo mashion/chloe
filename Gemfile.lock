@@ -4,6 +4,7 @@ GEM
     jslintrb_v8 (1.0.1)
       therubyracer (= 0.8.0)
     rake (0.8.7)
+    sprockets (1.0.2)
     therubyracer (0.8.0)
     watchr (0.7)
 
@@ -13,4 +14,5 @@ PLATFORMS
 DEPENDENCIES
   jslintrb_v8
   rake
+  sprockets
   watchr
