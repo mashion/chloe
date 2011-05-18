@@ -30,13 +30,13 @@ Chloe.prototype = {
       self.sessionId = data.sessionId;
       callback();
     });
+    this.transport.onmessage(function (message) {
+      self.handleMessage(Chloe.Message.unpack(message));
+    });
   },
   onmessage: function (callback) {
     var self = this;
     this.onmessageCallback = callback;
-    this.transport.onmessage(function (message) {
-      self.handleMessage(Chloe.Message.unpack(message));
-    });
   },
   onclose: function (callback) {
     this.transport.onclose(callback);
@@ -56,7 +56,7 @@ Chloe.prototype = {
     var callback = this.channelSubscriptions[message.channel];
     if (callback) {
       callback(message.data);
-    } else {
+    } else if (this.onmessageCallback) {
       this.onmessageCallback(message.data);
     }
   }
