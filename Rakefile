@@ -1,5 +1,6 @@
 require 'fileutils'
-require 'sprockets'
+require 'bundler'
+Bundler.require
 
 desc "Install all necessary dependencies"
 task :bootstrap do

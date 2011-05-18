@@ -1,11 +1,17 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    execjs (0.3.4)
+      multi_json (~> 1.0)
     jslintrb_v8 (1.0.1)
       therubyracer (= 0.8.0)
+    multi_json (1.0.2)
     rake (0.8.7)
     sprockets (1.0.2)
     therubyracer (0.8.0)
+    uglifier (0.5.3)
+      execjs (>= 0.3.0)
+      multi_json (>= 1.0.2)
     watchr (0.7)
 
 PLATFORMS
@@ -14,5 +20,6 @@ PLATFORMS
 DEPENDENCIES
   jslintrb_v8
   rake
-  sprockets
+  sprockets (= 1.0.2)
+  uglifier
   watchr
