@@ -6,4 +6,4 @@ NOTES.markdown
 foobar.access
 chloe.config
 rel/chloe*
-public/chloe.js
+public/*.js

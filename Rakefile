@@ -48,12 +48,18 @@ end
 
 desc "Build chloe.js"
 task :build_js do
+  unminified = "public/chloe.js"
+
   secretary = Sprockets::Secretary.new(
     :asset_root   => "public",
     :source_files => ["javascripts/chloe.js"]
   )
 
-  secretary.concatenation.save_to("public/chloe.js")
+  secretary.concatenation.save_to(unminified)
+
+  File.open("public/chloe-min.js", "w") do |f|
+    f.write Uglifier.new.compile(File.read(unminified))
+  end
 end
 
 begin
