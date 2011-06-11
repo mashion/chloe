@@ -5,8 +5,7 @@ Bundler.require
 desc "Install all necessary dependencies"
 task :bootstrap do
   sh("bundle install")
-  sh("rebar get-deps") rescue :expected_to_fail
-  sh("cd deps/yaws; rebar compile")
+  sh("rebar get-deps")
 end
 
 desc "Start an erlang console"
