@@ -12,7 +12,7 @@ function start_instance() {
 }
 
 function start_ubuntu_32_bit() {
-  start_instance ami-a6f504cf
+  start_instance ami-a6f504cf -k trotter-personal-ec2
 }
 
 function start_ubuntu_64_bit() {
