@@ -29,13 +29,17 @@ task :test do
   sh("rebar app=chloe eunit")
 end
 
+desc "Clean up"
+task :clean do
+  sh "rebar clean"
+end
+
 desc "Generate a release on this box"
-task :platform_release => :compile do
+task :platform_release => [:clean, :compile] do
   # TODO (factor out version to not be hard coded)
   version = "0.0.3beta"
   FileUtils.rm_rf("./rel/chloe")
   FileUtils.rm_rf("./rel/chloe-#{version}")
-  sh "rebar clean"
   sh "rebar generate"
   sh "cp -r ./rel/chloe ./rel/chloe-#{version}"
   sh "cd ./rel && tar czf chloe-#{version}.tgz chloe-#{version}"
