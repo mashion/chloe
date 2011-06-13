@@ -16,7 +16,7 @@ run() ->
     Id = "embedded",
     GconfList = [{id, Id},
                  {logdir, get_env(chloe, log_dir, ".")}],
-    Docroot = "./public",
+    Docroot = get_env(chloe, doc_root, "./public"),
     SconfList = [{port,       get_env(chloe, port, 8901)},
                  {servername, "chloe"},
                  {listen,     {0,0,0,0}},
