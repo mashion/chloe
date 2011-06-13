@@ -35,6 +35,7 @@ task :platform_release => :compile do
   version = "0.0.3beta"
   FileUtils.rm_rf("./rel/chloe")
   FileUtils.rm_rf("./rel/chloe-#{version}")
+  sh "rebar clean"
   sh "rebar generate"
   sh "cp -r ./rel/chloe ./rel/chloe-#{version}"
   sh "cd ./rel && tar czf chloe-#{version}.tgz chloe-#{version}"
