@@ -1,7 +1,7 @@
 basedir=$(dirname $0)
 source $basedir/common.sh
 
-host="${1:-"ubuntu@$(start_ubuntu_64_bit)"}"
+host="${1:-"ubuntu@$(start_ubuntu_32_bit)"}"
 
 ssh $host <<EOS
 sudo apt-get -y update
@@ -19,7 +19,7 @@ cd -
 # Get rebar
 git clone https://github.com/basho/rebar.git
 cd rebar
-bash ./bootstrap
+escript ./bootstrap
 sudo mv rebar /usr/local/bin
 cd -
 
