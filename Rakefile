@@ -37,7 +37,7 @@ end
 desc "Generate a release on this box"
 task :platform_release => [:clean, :compile] do
   # TODO (factor out version to not be hard coded)
-  version = "0.0.3beta"
+  version = "0.0.3"
   FileUtils.rm_rf("./rel/chloe")
   FileUtils.rm_rf("./rel/chloe-#{version}")
   sh "rebar generate"
