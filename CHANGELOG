@@ -1,3 +1,8 @@
+== HEAD
+
+- Fixed a memory leak
+- Allowed transports is now configurable
+
 == 0.0.3
 
 - Deployment fixes
