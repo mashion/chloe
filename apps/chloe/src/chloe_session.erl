@@ -17,7 +17,10 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--record(state, {transport_pid, messages}).
+-record(state, {transport_pid, messages, failed_health_checks}).
+
+-define(TIMEOUT, 13 * 1000).        % Primes are fun
+-define(HEALTH_CHECK_THRESHOLD, 4). % Five fails == death
 
 %%--------------------------------------------------------------------
 %% API functions
@@ -47,24 +50,24 @@ attach_transport_pid(Pid, TransportPid) ->
 
 init([TransportPid]) ->
     chloe_channel_store:subscribe("/all", self()),
-    {ok, #state{transport_pid = TransportPid, messages = []}}.
+    {ok, #state{transport_pid = TransportPid, messages = [], failed_health_checks = 0}, ?TIMEOUT}.
 
 handle_call(retrieve_messages, _From, State) ->
     Messages = State#state.messages,
     error_logger:info_msg("Old State was ~p~n", [State]),
     NewState = State#state{messages= [] },
     error_logger:info_msg("New State is ~p~n", [NewState]),
-    {reply, Messages, NewState};
+    {reply, Messages, NewState, ?TIMEOUT};
 handle_call(_Request, _From, State) ->
-    {reply, ok, State}.
+    {reply, ok, State, ?TIMEOUT}.
 
 handle_cast({send_to_server, Data}, State) ->
     send_data_to_server(Data),
-    {noreply, State};
+    {noreply, State, ?TIMEOUT};
 handle_cast({subscribe, Channel}, State) ->
     error_logger:info_msg("Subscribing to channel ~p~n", [Channel]),
     chloe_channel_store:subscribe(Channel, self()),
-    {noreply, State};
+    {noreply, State, ?TIMEOUT};
 handle_cast({send_to_browser, [Channel, Data]}, State) ->
     %% TODO (trotter): Handle case where we have a pid but
     %%                 it's no longer active.
@@ -72,7 +75,7 @@ handle_cast({send_to_browser, [Channel, Data]}, State) ->
                     true  -> send_message_to_browser(Channel, Data, State);
                     _     -> store_message_for_later(Channel, Data, State)
                 end,
-    {noreply, NewState};
+    {noreply, NewState, ?TIMEOUT};
 handle_cast({attach_transport_pid, TransportPid}, State) ->
     Messages = State#state.messages,
     case Messages of
@@ -80,10 +83,25 @@ handle_cast({attach_transport_pid, TransportPid}, State) ->
         _  -> NewState = State#state{messages = []},
               gen_server:cast(TransportPid, {send, [Messages]})
     end,
-    {noreply, NewState#state{transport_pid = TransportPid}}.
+    {noreply, NewState#state{transport_pid = TransportPid}, ?TIMEOUT}.
 
+handle_info(timeout, State) ->
+    case check_transport_health(State) of
+        dead      -> error_logger:info_msg("Session is dead!"),
+                     {stop, normal, State};
+        unhealthy -> error_logger:info_msg("Session is unhealthy!"),
+                     {noreply,
+                      State#state{failed_health_checks=State#state.failed_health_checks + 1},
+                      ?TIMEOUT};
+        ok        -> error_logger:info_msg("Session is fine"),
+                     {noreply,
+                      State#state{failed_health_checks=0},
+                      ?TIMEOUT}
+    end;
+% TODO (trotter): We're getting weird messages from the app server,
+%                 need to investigate.
 handle_info(_Info, State) ->
-    {noreply, State}.
+    {noreply, State, ?TIMEOUT}.
 
 terminate(_Reason, _State) ->
     ok.
@@ -94,6 +112,15 @@ code_change(_OldVsn, State, _Extra) ->
 %%--------------------------------------------------------------------
 %% Internal Functions
 %%--------------------------------------------------------------------
+
+check_transport_health(State) ->
+    case is_transport_available(State#state.transport_pid) of
+        true -> ok;
+        _ -> case State#state.failed_health_checks > ?HEALTH_CHECK_THRESHOLD of
+                true  -> dead;
+                _     -> unhealthy
+             end
+    end.
 
 send_data_to_server(Data) ->
     {ok, Url} = application:get_env(chloe, application_server_url),
