@@ -39,9 +39,7 @@ handle_cast({send, [Messages]}, State) ->
     Packed = chloe_message:pack(Messages),
     yaws_api:stream_process_deliver_final_chunk(State#state.socket, Packed),
     yaws_api:stream_process_end(State#state.socket, State#state.yaws_pid),
-    {stop, normal, State};
-handle_cast(_Request, State) ->
-    {noreply, State}.
+    {stop, normal, State}.
 
 handle_info({ok, YawsPid}, State) ->
     Message = State#state.message,
@@ -51,9 +49,7 @@ handle_info({ok, YawsPid}, State) ->
     {noreply, State#state{yaws_pid = YawsPid}};
 handle_info({discard, YawsPid}, State) ->
     yaws_api:stream_process_end(State#state.socket, YawsPid),
-    {stop, normal, State};
-handle_info(_Info, State) ->
-    {noreply, State}.
+    {stop, normal, State}.
 
 terminate(_Reason, _State) ->
     ok.
