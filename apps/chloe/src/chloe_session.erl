@@ -87,14 +87,11 @@ handle_cast({attach_transport_pid, TransportPid}, State) ->
 
 handle_info(timeout, State) ->
     case check_transport_health(State) of
-        dead      -> error_logger:info_msg("Session is dead!"),
-                     {stop, normal, State};
-        unhealthy -> error_logger:info_msg("Session is unhealthy!"),
-                     {noreply,
+        dead      -> {stop, normal, State};
+        unhealthy -> {noreply,
                       State#state{failed_health_checks=State#state.failed_health_checks + 1},
                       ?TIMEOUT};
-        ok        -> error_logger:info_msg("Session is fine"),
-                     {noreply,
+        ok        -> {noreply,
                       State#state{failed_health_checks=0},
                       ?TIMEOUT}
     end;
