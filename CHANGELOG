@@ -2,6 +2,7 @@
 
 - Fixed a memory leak
 - Allowed transports is now configurable
+- Optionally require messages from app server to be signed
 
 == 0.0.3
 
