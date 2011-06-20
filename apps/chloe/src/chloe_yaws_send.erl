@@ -5,12 +5,26 @@
 -export([out/1]).
 
 out(A) ->
-    send_to_all_subscribers(A),
-    {content, "text/plain", "success"}.
+    case is_message_authenticated(A) of
+        true -> send_to_all_subscribers(A),
+                {content, "text/plain", "success"};
+           _ -> {content, "text/plain", "unauthenticated"}
+    end.
 
 %%--------------------------------------------------------------------
 %% internal functions
 %%--------------------------------------------------------------------
+
+is_message_authenticated(A) ->
+    case application:get_env(chloe, secret) of
+        undefined    -> true;
+        {ok, Secret} -> check_signature(A, Secret)
+    end.
+
+check_signature(A, Secret) ->
+    {ok, Data} = yaws_api:postvar(A, "data"),
+    {ok, Sig}  = yaws_api:postvar(A, "sig"),
+    lib_md5:hexdigest(Data ++ Secret) =:= Sig.
 
 send_to_all_subscribers(A) ->
     Channel = case yaws_api:postvar(A, "channel") of
