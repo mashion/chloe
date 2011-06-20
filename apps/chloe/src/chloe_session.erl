@@ -95,9 +95,10 @@ handle_info(timeout, State) ->
                       State#state{failed_health_checks=0},
                       ?TIMEOUT}
     end;
-% TODO (trotter): We're getting weird messages from the app server,
-%                 need to investigate.
-handle_info(_Info, State) ->
+%% This will come to us as the response to our request
+%% to the app server. We don't care what the app server
+%% said.
+handle_info({http, _}, State) ->
     {noreply, State, ?TIMEOUT}.
 
 terminate(_Reason, _State) ->
