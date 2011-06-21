@@ -39,7 +39,7 @@ Mac Binary
 Ubuntu Binary
 =============
 
-    wget https://github.com/downloads/mashion/chloe/chloe-0.0.3-ubuntu32.tgz
+    wget https://github.com/downloads/mashion/chloe/chloe-0.0.3-ubuntu-32.tgz
     tar xzvf chloe-0.0.3-ubuntu32.tgz
     cd chloe-0.0.3
     ./bin/chloe start
