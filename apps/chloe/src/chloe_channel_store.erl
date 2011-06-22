@@ -70,5 +70,5 @@ add_subscriber(NewSubscriber, Subscribers) ->
 subscribers_for(Channel) ->
     case ets:lookup(?TABLE_ID, Channel) of
         [{Channel, Subscribers}] -> {ok, Subscribers};
-        []                       -> {error, channel_not_found}
+        []                       -> {ok, []}
     end.
