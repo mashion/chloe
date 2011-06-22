@@ -96,7 +96,7 @@ Define a function for handling incoming messages:
 Connect to Chloe and send a message:
 
     chloe.connect(function () {
-      console.send('Ohai!');
+      chloe.send('Ohai!');
     });
 
 Subscribe to a channel (note that we do this within the `connect` callback,
