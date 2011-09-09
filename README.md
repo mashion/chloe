@@ -25,6 +25,11 @@ relay it back to the connected browser [5].
       |                                                                                                      |
       +------------------------------------------------------------------------------------------------------+
 
+Support
+-------
+
+Mailing List: `http://groups.google.com/group/chloe-ws`
+
 Installation
 ------------
 
