@@ -5,7 +5,8 @@ Chloe = function (options) {
 
   var transports = options.transports ||
                    [Chloe.WebSocketTransport,
-                    Chloe.XhrTransport,
+// TODO (trotter): Test XHR and add back the transport
+//                    Chloe.XhrTransport,
                     Chloe.JsonpTransport];
 
   for (var i = 0, l = transports.length; i < l; i++) {
