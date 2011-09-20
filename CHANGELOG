@@ -3,6 +3,9 @@
 - Fixed a memory leak
 - Allowed transports is now configurable
 - Optionally require messages from app server to be signed
+- Discontinue XHR support
+- Discontinue Chrome WebSockets (will be added back soon)
+- Support Safari WebSockets
 
 == 0.0.3
 
