@@ -21,6 +21,7 @@ end
 
 desc "Compile Chloe"
 task :compile => [:build_js, :test] do
+  sh("rebar update-deps")
   sh("rebar compile")
 end
 
