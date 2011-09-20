@@ -67,6 +67,7 @@ From Source
 
 - Run these commands
 
+        gem install rake
         rake bootstrap
         rake server
 
