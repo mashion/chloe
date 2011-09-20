@@ -60,6 +60,8 @@ handle_info({tcp, _WebSocket, DataFrames}, State) ->
     {noreply, State};
 handle_info({tcp_closed, _WebSocket}, State) ->
     {stop, ok, State};
+% handle_info(discard, State) ->
+%     {stop, ok, State};
 %% httpc is going to tell us how our request went,
 %% but we don't care
 handle_info({http, _Response}, State) ->
@@ -93,10 +95,12 @@ handle_message(Data, State) ->
     end.
 
 handle_websocket_frames(DataFrames, State) ->
-    case yaws_websocket_unframe_data_patched(DataFrames) of
-        {ok, Data, <<>>}       -> handle_message(Data, State);
-        {ok, Data, NextFrames} -> handle_message(Data, State),
-                                  handle_websocket_frames(NextFrames, State)
+    %% TODO (trotter): We _may_ be able to use yaws_websockets:unframe_all
+    %%                 then process the resulting list.
+    case yaws_websockets:unframe_one(DataFrames) of
+        {ok, Data, <<>>}      -> handle_message(Data, State);
+        {ok, Data, NextFrame} -> handle_message(Data, State),
+                                 handle_websocket_frames(NextFrame, State)
     end.
 
 handle_channel_subscribe_message(Message, State) ->
@@ -107,38 +111,3 @@ handle_data_message(Message, State) ->
     error_logger:info_msg("Got data from WebSocket: ~p~n", [Message#message.data]),
     chloe_session:send_to_server(session_pid(State#state.session_id),
                                  Message#message.data).
-
-%%--------------------------------------------------------------------
-%% Patched functions from yaws_websocket.erl
-%%--------------------------------------------------------------------
-yaws_websocket_unframe_data_patched(DataFrames) ->
-    <<Type, _/bitstring>> = DataFrames,
-    case Type of
-    T when (T =< 127) ->
-        %% {ok, FF_Ended_Frame} = re:compile("^.(.*)\\xFF(.*?)", [ungreedy, dotall]),
-        FF_Ended_Frame = {re_pattern,2,0,
-                  <<69,82,67,80,79,0,0,0,20,2,0,0,5,0,0,0,2,0,0,0,
-                                0,0,255,2,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,93,0,27,25,12,94,0,7,0,1,57,12,84,
-                                0,7,27,255,94,0,7,0,2,56,12,84,0,7,84,0,27,0>>},
-        {match, [Data, NextFrames]} =
-        re:run(DataFrames, FF_Ended_Frame,
-               [{capture, all_but_first, binary}]),
-        {ok, Data, NextFrames};
-    _ -> %% Type band 16#80 =:= 16#80
-        {Length, LenBytes} = yaws_websockets_unpack_length(DataFrames, 0, 0),
-        <<_, _:LenBytes/bytes, Data:Length/bytes,
-         _NextFrame/bitstring>> = DataFrames,
-        Data
-    end.
-
-yaws_websockets_unpack_length(Binary, LenBytes, Length) ->
-    <<_, _:LenBytes/bytes, B, _/bitstring>> = Binary,
-    B_v = B band 16#7F,
-    NewLength = (Length * 128) + B_v,
-    case B band 16#80 of
-16#80 ->
-        yaws_websockets_unpack_length(Binary, LenBytes + 1, NewLength);
-    0 ->
-        {NewLength, LenBytes + 1}
-    end.
