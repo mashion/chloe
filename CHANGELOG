@@ -1,4 +1,4 @@
-== HEAD
+== 0.0.4
 
 - Fixed a memory leak
 - Allowed transports is now configurable
