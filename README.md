@@ -36,17 +36,17 @@ Installation
 Mac Binary
 ==========
 
-    curl -LO https://github.com/downloads/mashion/chloe/chloe-0.0.4-osx.tgz
-    tar xzvf chloe-0.0.4-osx.tgz
-    cd chloe-0.0.4
+    curl -LO https://github.com/downloads/mashion/chloe/chloe-0.0.5-osx.tgz
+    tar xzvf chloe-0.0.5-osx.tgz
+    cd chloe-0.0.5
     ./bin/chloe start
 
 Ubuntu Binary
 =============
 
-    wget https://github.com/downloads/mashion/chloe/chloe-0.0.4-ubuntu-32.tgz
-    tar xzvf chloe-0.0.4-ubuntu32.tgz
-    cd chloe-0.0.4
+    wget https://github.com/downloads/mashion/chloe/chloe-0.0.5-ubuntu-32.tgz
+    tar xzvf chloe-0.0.5-ubuntu32.tgz
+    cd chloe-0.0.5
     ./bin/chloe start
 
 From Source
@@ -128,7 +128,7 @@ Sending a message to a specific channel in chloe:
 Configuring Chloe
 -----------------
 
-Chloe has a single configuration file, `chloe-0.0.4/etc/app.config`. Allowed
+Chloe has a single configuration file, `chloe-0.0.5/etc/app.config`. Allowed
 options for the Chloe application are:
 
   - **application_server_url**: The url for the application server, ex: http://localhost:4567/updates

@@ -1,3 +1,7 @@
+== 0.0.5
+
+- Fix sendfile issue with Ubuntu
+
 == 0.0.4
 
 - Fixed a memory leak
