@@ -1,3 +1,7 @@
+== HEAD
+
+- Sign requests coming from the Chloe server
+
 == 0.0.5
 
 - Fix sendfile issue with Ubuntu

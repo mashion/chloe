@@ -122,11 +122,18 @@ check_transport_health(State) ->
 
 send_data_to_server(Data) ->
     {ok, Url} = application:get_env(chloe, application_server_url),
+    {ok, Signature} = create_signature(Data),
     httpc:request(post, {Url,
-                         [],
+                         [{"x-chloe-signature", Signature}],
                          "text/plain",
                          Data},
                   [], [{sync, false}]).
+
+create_signature(Data) ->
+    case application:get_env(chloe, secret) of
+        undefined    -> {ok, ""};
+        {ok, Secret} -> {ok, lib_md5:hexdigest(Data ++ Secret)}
+    end.
 
 store_message_for_later(Channel, Data, State) ->
     Messages = [#message{channel=Channel, data=Data} | State#state.messages],
